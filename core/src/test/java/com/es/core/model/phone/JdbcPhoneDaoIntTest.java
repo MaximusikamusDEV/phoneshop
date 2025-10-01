@@ -7,13 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import static org.junit.jupiter.api.Assertions.*;
+
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Collections;
-import java.util.Optional;
-import java.util.Set;
-import java.util.HashSet;
+import java.util.*;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = "classpath:context/applicationContext-core-test.xml")
@@ -24,14 +22,14 @@ public class JdbcPhoneDaoIntTest {
     private static Color createdColor;
 
     @BeforeAll
-    static void setCreatedColor(){
+    static void setCreatedColor() {
         createdColor = new Color();
         createdColor.setId(1013L);
         createdColor.setCode("TEST");
     }
 
     @BeforeAll
-    static void setCreatedPhone(){
+    static void setCreatedPhone() {
         createdPhone = new Phone();
         createdPhone.setBrand("ARCHOSTEST");
         createdPhone.setModel("ARCHOS 101 G9");
@@ -74,7 +72,6 @@ public class JdbcPhoneDaoIntTest {
         Optional<Phone> phone = phoneDao.get(1000L);
 
         assertNotNull(phone);
-        assertTrue(phone.isPresent());
         assertEquals("ARCHOS", phone.get().getBrand());
         assertNotEquals(null, phone.get().getColors());
         assertFalse(phone.get().getColors().isEmpty());
@@ -82,12 +79,15 @@ public class JdbcPhoneDaoIntTest {
     }
 
     @Test
-    void testSaveAndUpdate() {
+    void testSave() {
         phoneDao.save(createdPhone);
         assertNotNull(createdPhone.getId());
         Optional<Phone> phoneGet = phoneDao.get(createdPhone.getId());
-        assertTrue(phoneGet.isPresent());
         assertEquals("ARCHOSTEST", phoneGet.get().getBrand());
+    }
+
+    @Test
+    void testUpdate() {
         createdPhone.setDescription("New description");
         phoneDao.save(createdPhone);
         Optional<Phone> phoneUpdate = phoneDao.get(createdPhone.getId());
@@ -136,5 +136,20 @@ public class JdbcPhoneDaoIntTest {
         problemPhone.setModel("Test");
 
         assertThrows(DataIntegrityViolationException.class, () -> phoneDao.save(problemPhone));
+    }
+
+    @Test
+    void testSavePhoneColors() {
+        HashSet<Color> colorsSet = new HashSet<>();
+        Color color = new Color();
+        color.setCode("TESTCOLOR");
+        colorsSet.add(color);
+        createdPhone.setColors(colorsSet);
+        phoneDao.save(createdPhone);
+        Optional<Phone> phoneGet = phoneDao.get(createdPhone.getId());
+        assertEquals(1, phoneGet.get().getColors().size());
+
+        assertTrue(phoneGet.get().getColors().stream()
+                .anyMatch(c -> color.getCode().equals(c.getCode())));
     }
 }
