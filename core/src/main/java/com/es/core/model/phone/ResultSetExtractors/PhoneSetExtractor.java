@@ -1,7 +1,10 @@
 package com.es.core.model.phone.ResultSetExtractors;
 
 import com.es.core.model.phone.Color;
+import com.es.core.model.phone.Mappers.ColorMapper;
+import com.es.core.model.phone.Mappers.PhoneMapper;
 import com.es.core.model.phone.Phone;
+import jakarta.annotation.Resource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Component;
@@ -15,7 +18,12 @@ import java.util.HashSet;
 import java.util.ArrayList;
 
 @Component
-public class ManyPhonesWithColors extends PhoneExtractor implements ResultSetExtractor<List<Phone>> {
+public class PhoneSetExtractor implements ResultSetExtractor<List<Phone>> {
+    @Resource
+    private PhoneMapper phoneMapper;
+    @Resource
+    private ColorMapper colorMapper;
+
     @Override
     public List<Phone> extractData(ResultSet rs) throws SQLException, DataAccessException {
         Map<Long, Phone> phoneMap = new HashMap<>();
@@ -25,15 +33,15 @@ public class ManyPhonesWithColors extends PhoneExtractor implements ResultSetExt
             Phone phone = phoneMap.get(phoneId);
 
             if (phone == null) {
-                phone = mapResultSetToPhone(rs);
+                phone = phoneMapper.mapRow(rs);
                 phone.setColors(new HashSet<>());
                 phoneMap.put(phoneId, phone);
             }
 
-            rs.getLong("color_id");
+            Long colorId = (Long) rs.getObject("color_id");
 
-            if (!rs.wasNull()) {
-                Color color = mapResultSetToColor(rs);
+            if (colorId != null) {
+                Color color = colorMapper.mapRow(rs);
                 phone.getColors().add(color);
             }
         }

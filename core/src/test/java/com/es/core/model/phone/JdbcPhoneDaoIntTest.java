@@ -7,11 +7,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.List;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.Set;
+import java.util.HashSet;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = "classpath:context/applicationContext-core-test.xml")
@@ -98,7 +105,7 @@ public class JdbcPhoneDaoIntTest {
     @Test
     void getNonExistingPhone() {
         Optional<Phone> phone = phoneDao.get(-1L);
-        assertFalse(phone.isPresent());
+        assertTrue(phone.isEmpty());
     }
 
     @Test

@@ -1,6 +1,5 @@
-package com.es.core.model.phone.ResultSetExtractors;
+package com.es.core.model.phone.Mappers;
 
-import com.es.core.model.phone.Color;
 import com.es.core.model.phone.Phone;
 import org.springframework.stereotype.Component;
 
@@ -8,15 +7,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @Component
-abstract class PhoneExtractor {
-    protected Color mapResultSetToColor(final ResultSet rs) throws SQLException {
-        Color color = new Color();
-        color.setId(rs.getLong("color_id"));
-        color.setCode(rs.getString("color_code"));
-        return color;
-    }
-
-    protected Phone mapResultSetToPhone(final ResultSet rs) throws SQLException {
+public class PhoneMapper {
+    public Phone mapRow(final ResultSet rs) throws SQLException {
         Phone phone = new Phone();
         phone.setId(rs.getLong("id"));
         phone.setBrand(rs.getString("brand"));
