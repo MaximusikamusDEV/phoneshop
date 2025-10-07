@@ -30,14 +30,8 @@ public class JdbcPhoneDao implements PhoneDao {
     @Override
     public Optional<Phone> get(final Long key) {
         List<Phone> phones = jdbcTemplate.query(DBConstants.QUERY_GET_PHONE_WITH_COLORS, phoneSetExtractor, key);
-        Optional<Phone> finalPhone;
 
-        if (phones != null && !phones.isEmpty())
-            finalPhone = Optional.of(phones.stream().findFirst().orElse(null));
-        else
-            return Optional.empty();
-
-        return finalPhone;
+        return phones.stream().findFirst();
     }
 
     @Override
@@ -58,6 +52,43 @@ public class JdbcPhoneDao implements PhoneDao {
     @Override
     public List<Phone> findAll(int offset, int limit) {
         return jdbcTemplate.query(DBConstants.QUERY_FIND_ALL_WITH_COLORS_OFFSET_LIMIT, phoneSetExtractor, offset, limit);
+    }
+
+    @Override
+    public List<Phone> findAllInStockSorted(int offset, int limit, String sortField, String sortOrder) {
+        String query = String.format(
+                DBConstants.QUERY_FIND_ALL_WITH_COLORS_OFFSET_LIMIT_IN_STOCK_SORTED,
+                sortField,
+                sortOrder,
+                sortField,
+                sortOrder);
+
+        return jdbcTemplate.query(query, phoneSetExtractor, offset, limit);
+    }
+
+    @Override
+    public int getPhoneInStockCount() {
+        Optional<Integer> countResult = Optional.ofNullable(jdbcTemplate.queryForObject(DBConstants.QUERY_COUNT_PHONES_IN_STOCK, Integer.class));
+        return countResult.orElse(0);
+    }
+
+    @Override
+    public List<Phone> findAllByQueryInStock(String query, int offset, int limit, String sortField, String sortOrder) {
+        String dbQuery = String.format(DBConstants.QUERY_BY_QUERY_IN_STOCK, sortField, sortOrder, sortField, sortOrder);
+        return jdbcTemplate.query(dbQuery, phoneSetExtractor, query, query, offset, limit);
+    }
+
+    @Override
+    public int getCountPhoneByQueryInStock(String query) {
+        Optional<Integer> countResult
+                = Optional.ofNullable(
+                        jdbcTemplate.queryForObject(
+                                DBConstants.QUERY_COUNT_PHONES_IN_STOCK_WITH_QUERY,
+                                Integer.class,
+                                query,
+                                query));
+
+        return countResult.orElse(0);
     }
 
     private void newPhoneIdFromDb(Phone phone) {
