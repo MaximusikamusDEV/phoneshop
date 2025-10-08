@@ -29,3 +29,7 @@ target
 # Eclipse
 *.classpath
 *.project
+
+# Logger
+*.log
+logs
