@@ -26,6 +26,47 @@ public class DBConstants {
             "left join phone2color on p.id = phone2color.phoneId " +
             "left join colors c on phone2color.colorId = c.id " +
             "order by p.id OFFSET ? LIMIT ?";
+    public static final String QUERY_FIND_ALL_WITH_COLORS_OFFSET_LIMIT_IN_STOCK_SORTED = "select " +
+            "p.id, p.brand, p.model, p.price, p.displaySizeInches, p.weightGr, " +
+            "p.lengthMm, p.widthMm, p.heightMm, p.announced, p.deviceType, p.os, " +
+            "p.displayResolution, p.pixelDensity, p.displayTechnology, " +
+            "p.backCameraMegapixels, p.frontCameraMegapixels, p.ramGb, " +
+            "p.internalStorageGb, p.batteryCapacityMah, p.talkTimeHours, " +
+            "p.standByTimeHours, p.bluetooth, p.positioning, p.imageUrl, p.description, " +
+            "c.id as color_id, c.code as color_code " +
+            "from (select * from phones where id in ( " +
+            "select p.id from phones p " +
+            "inner join stocks s on p.id = s.phoneId " +
+            "order by %s %s OFFSET ? LIMIT ?" +
+            ")) p " +
+            "left join phone2color on p.id = phone2color.phoneId " +
+            "left join colors c on phone2color.colorId = c.id " +
+            "order by %s %s";
+    public static final String QUERY_BY_QUERY_IN_STOCK = "select " +
+            "p.id, p.brand, p.model, p.price, p.displaySizeInches, p.weightGr, " +
+            "p.lengthMm, p.widthMm, p.heightMm, p.announced, p.deviceType, p.os, " +
+            "p.displayResolution, p.pixelDensity, p.displayTechnology, " +
+            "p.backCameraMegapixels, p.frontCameraMegapixels, p.ramGb, " +
+            "p.internalStorageGb, p.batteryCapacityMah, p.talkTimeHours, " +
+            "p.standByTimeHours, p.bluetooth, p.positioning, p.imageUrl, p.description, " +
+            "c.id as color_id, c.code as color_code " +
+            "from (select * from phones where id in ( " +
+            "select p.id from phones p " +
+            "inner join stocks s on p.id = s.phoneId " +
+            "where s.stock > 0 and (lower(p.brand) like ? or lower(p.model) like ?) " +
+            "order by %s %s OFFSET ? LIMIT ?" +
+            ")) p " +
+            "left join phone2color on p.id = phone2color.phoneId " +
+            "left join colors c on phone2color.colorId = c.id " +
+            "order by %s %s";
+    public static final String QUERY_COUNT_PHONES_IN_STOCK_WITH_QUERY = "select count(distinct p.id) " +
+            "from phones p " +
+            "inner join stocks s on p.id = s.phoneId " +
+            "where s.stock > 0 and (lower(p.brand) like ? or lower(p.model) like ?)";
+    public static final String QUERY_COUNT_PHONES_IN_STOCK = "select count(distinct p.id) " +
+            "from phones p " +
+            "inner join stocks s on p.id = s.phoneId " +
+            "where s.stock > 0";
     public static final String QUERY_SAVE_PHONE = "insert into phones (brand, model, price, displaySizeInches, weightGr," +
             "lengthMm, widthMm, heightMm, announced, deviceType, os, displayResolution, pixelDensity," +
             "displayTechnology, backCameraMegapixels, frontCameraMegapixels, ramGb, internalStorageGb," +
