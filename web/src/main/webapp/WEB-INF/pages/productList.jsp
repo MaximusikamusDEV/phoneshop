@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <jsp:include page="header.jsp"/>
 
@@ -29,20 +30,10 @@
             <div class="d-flex justify-content-between align-items-center">
                 <span>Brand</span>
                 <div>
-                    <a href="<c:url value="productList">
-                    <c:param name="page" value="1"/>
-                    <c:param name="query" value="${param.query}"/>
-                    <c:param name="sortField" value="brand"/>
-                    <c:param name="sortOrder" value="asc"/>
-                    </c:url> ">
+                    <a href="<t:generateUrl page="1" sortField="brand" sortOrder="asc"/>">
                         <i class="bi bi-sort-alpha-up ${param.sortField == 'brand' && param.sortOrder == 'asc' ? 'fw-bold text-danger' : ''}"></i></a>
 
-                    <a href="<c:url value="productList">
-                    <c:param name="page" value="1"/>
-                    <c:param name="query" value="${param.query}"/>
-                    <c:param name="sortField" value="brand"/>
-                    <c:param name="sortOrder" value="desc"/>
-                    </c:url> ">
+                    <a href="<t:generateUrl page="1" sortField="brand" sortOrder="desc"/>">
                         <i class="bi bi-sort-alpha-down ${param.sortField == 'brand' && param.sortOrder == 'desc' ? 'fw-bold text-danger' : ''}"></i></a>
                 </div>
             </div>
@@ -51,20 +42,10 @@
             <div class="d-flex justify-content-between align-items-center">
                 <span>Model</span>
                 <div>
-                    <a href="<c:url value="productList">
-                    <c:param name="page" value="1"/>
-                    <c:param name="query" value="${param.query}"/>
-                    <c:param name="sortField" value="model"/>
-                    <c:param name="sortOrder" value="asc"/>
-                    </c:url> ">
+                    <a href="<t:generateUrl page="1" sortField="model" sortOrder="asc"/>">
                         <i class="bi bi-sort-alpha-up ${param.sortField == 'model' && param.sortOrder == 'asc' ? 'fw-bold text-danger' : ''}"></i></a>
 
-                    <a href="<c:url value="productList">
-                    <c:param name="page" value="1"/>
-                    <c:param name="query" value="${param.query}"/>
-                    <c:param name="sortField" value="model"/>
-                    <c:param name="sortOrder" value="desc"/>
-                    </c:url> ">
+                    <a href="<t:generateUrl page="1" sortField="model" sortOrder="desc"/>">
                         <i class="bi bi-sort-alpha-down ${param.sortField == 'model' && param.sortOrder == 'desc' ? 'fw-bold text-danger' : ''}"></i></a>
                 </div>
             </div>
@@ -74,21 +55,11 @@
             <div class="d-flex justify-content-between align-items-center">
                 <span>Display size</span>
                 <div>
-                    <a href="<c:url value="productList">
-                    <c:param name="page" value="1"/>
-                    <c:param name="query" value="${param.query}"/>
-                    <c:param name="sortField" value="displaySizeInches"/>
-                    <c:param name="sortOrder" value="asc"/>
-                    </c:url> ">
-                        <i class="bi bi-sort-numeric-up ${param.sortField == 'displaySizeInches' && param.sortOrder == 'asc' ? 'fw-bold text-danger' : ''}"></i></a>
+                    <a href="<t:generateUrl page="1" sortField="display_Size_Inches" sortOrder="asc"/>">
+                        <i class="bi bi-sort-numeric-up ${param.sortField == 'display_Size_Inches' && param.sortOrder == 'asc' ? 'fw-bold text-danger' : ''}"></i></a>
 
-                    <a href="<c:url value="productList">
-                    <c:param name="page" value="1"/>
-                    <c:param name="query" value="${param.query}"/>
-                    <c:param name="sortField" value="displaySizeInches"/>
-                    <c:param name="sortOrder" value="desc"/>
-                    </c:url> ">
-                        <i class="bi bi-sort-numeric-down ${param.sortField == 'displaySizeInches' && param.sortOrder == 'desc' ? 'fw-bold text-danger' : ''}"></i></a>
+                    <a href="<t:generateUrl page="1" sortField="display_Size_Inches" sortOrder="desc"/>">
+                        <i class="bi bi-sort-numeric-down ${param.sortField == 'display_Size_Inches' && param.sortOrder == 'desc' ? 'fw-bold text-danger' : ''}"></i></a>
                 </div>
             </div>
         </th>
@@ -96,20 +67,10 @@
             <div class="d-flex justify-content-between align-items-center">
                 <span>Price</span>
                 <div>
-                    <a href="<c:url value="productList">
-                    <c:param name="page" value="1"/>
-                    <c:param name="query" value="${param.query}"/>
-                    <c:param name="sortField" value="price"/>
-                    <c:param name="sortOrder" value="asc"/>
-                    </c:url> ">
+                    <a href="<t:generateUrl page="1" sortField="price" sortOrder="asc"/>">
                         <i class="bi bi-sort-numeric-up ${param.sortField == 'price' && param.sortOrder == 'asc' ? 'fw-bold text-danger' : ''}"></i></a>
 
-                    <a href="<c:url value="productList">
-                    <c:param name="page" value="1"/>
-                    <c:param name="query" value="${param.query}"/>
-                    <c:param name="sortField" value="price"/>
-                    <c:param name="sortOrder" value="desc"/>
-                    </c:url> ">
+                    <a href="<t:generateUrl page="1" sortField="price" sortOrder="desc"/>">
                         <i class="bi bi-sort-numeric-down ${param.sortField == 'price' && param.sortOrder == 'desc' ? 'fw-bold text-danger' : ''}"></i></a>
                 </div>
             </div>
@@ -150,19 +111,47 @@
         $('button[phone-id]').click(function(){
             var row = $(this).closest('tr');
             var phoneId = $(this).attr('phone-id');
-            var quantity = row.find('input[name="quantity"]').val();
+            var quantityInput = row.find('input[name="quantity"]');
+            var quantity = quantityInput.val();
+
+           row.find('.error-message').remove();
 
             $.ajax({
                 url : '${pageContext.request.contextPath}/ajaxCart',
                 type : 'POST',
-                data : {
+                contentType: 'application/json',
+                dataType : 'json',
+                data : JSON.stringify({
                     phoneId : phoneId,
                     quantity : quantity
+                }),
+                success : function(response){
+                    if(response.status === 'success'){
+                        $('#cartButton').text('My cart: ' + response.totalQuantity + ' items, ' + response.totalCost + ' $');
+                        quantityInput.removeClass('is-invalid');
+                        quantityInput.val('1');
+                    } else{
+                        showError(row, quantityInput, response.message);
+                    }
                 },
-                success : function(){
-                    location.reload();
+                error : function(xhr){
+                    let message = 'Error';
+                    try {
+                        const err = JSON.parse(xhr.responseText);
+                        message = err.message || message;
+                    } catch(e){
+                        message = xhr.statusText || message;
+                    }
+                    showError(row, quantityInput, message);
                 }
             });
+
+            function showError(row, quantityInput, message) {
+                quantityInput.addClass('is-invalid');
+                quantityInput.val('1');
+                var $err = $('<div>').addClass('text-danger error-message mt-1').text(message);
+                quantityInput.after($err);
+            }
         });
     });
 </script>
@@ -171,12 +160,7 @@
     <ul class="pagination justify-content-end">
         <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
             <a class="page-link"
-               href="<c:url value="productList">
-                <c:param name="page" value="${currentPage-1}"/>
-                <c:param name="query" value="${param.query}"/>
-                <c:param name="sortField" value="${param.sortField}"/>
-                <c:param name="sortOrder" value="${param.sortOrder}"/>
-            </c:url>"
+               href="<t:generateUrl page="${currentPage-1}"/>"
                aria-label="Previous">
                 <span aria-hidden="true">&laquo;</span>
             </a>
@@ -184,33 +168,18 @@
 
             <c:if test="${currentPage == 1}">
         <li class="page-item active"><a class="page-link"
-                                        href="<c:url value="productList">
-                <c:param name="page" value="${currentPage}"/>
-                <c:param name="query" value="${param.query}"/>
-                <c:param name="sortField" value="${param.sortField}"/>
-                <c:param name="sortOrder" value="${param.sortOrder}"/>
-            </c:url>">
+                                        href="<t:generateUrl page="${currentPage}"/>">
                 ${currentPage}</a></li>
 
         <c:if test="${totalPages >= 2}">
             <li class="page-item"><a class="page-link"
-                                     href="<c:url value="productList">
-                <c:param name="page" value="${currentPage+1}"/>
-                <c:param name="query" value="${param.query}"/>
-                <c:param name="sortField" value="${param.sortField}"/>
-                <c:param name="sortOrder" value="${param.sortOrder}"/>
-            </c:url>">
+                                     href="<t:generateUrl page="${currentPage+1}"/>">
                     ${currentPage+1}</a></li>
         </c:if>
 
         <c:if test="${totalPages >= 3}">
             <li class="page-item"><a class="page-link"
-                                     href="<c:url value="productList">
-                <c:param name="page" value="${currentPage+2}"/>
-                <c:param name="query" value="${param.query}"/>
-                <c:param name="sortField" value="${param.sortField}"/>
-                <c:param name="sortOrder" value="${param.sortOrder}"/>
-            </c:url>">
+                                     href="<t:generateUrl page="${currentPage+2}"/>">
                     ${currentPage+2}</a></li>
         </c:if>
         </c:if>
@@ -218,77 +187,41 @@
         <c:if test="${currentPage == totalPages && totalPages > 1}">
             <c:if test="${totalPages >= 3}">
                 <li class="page-item"><a class="page-link"
-                                         href="<c:url value="productList">
-                <c:param name="page" value="${currentPage-2}"/>
-                <c:param name="query" value="${param.query}"/>
-                <c:param name="sortField" value="${param.sortField}"/>
-                <c:param name="sortOrder" value="${param.sortOrder}"/>
-            </c:url>">
+                                         href="<t:generateUrl page="${currentPage-2}"/>">
                         ${currentPage-2}</a></li>
             </c:if>
 
             <c:if test="${totalPages >= 2}">
                 <li class="page-item"><a class="page-link"
-                                         href="<c:url value="productList">
-                <c:param name="page" value="${currentPage-1}"/>
-                <c:param name="query" value="${param.query}"/>
-                <c:param name="sortField" value="${param.sortField}"/>
-                <c:param name="sortOrder" value="${param.sortOrder}"/>
-            </c:url>">
+                                         href="<t:generateUrl page="${currentPage-1}"/>">
                         ${currentPage-1}</a></li>
             </c:if>
 
             <li class="page-item active"><a class="page-link"
-                                            href="<c:url value="productList">
-                <c:param name="page" value="${currentPage}"/>
-                <c:param name="query" value="${param.query}"/>
-                <c:param name="sortField" value="${param.sortField}"/>
-                <c:param name="sortOrder" value="${param.sortOrder}"/>
-            </c:url>">
+                                            href="<t:generateUrl page="${currentPage}"/>">
                     ${currentPage}</a></li>
         </c:if>
 
         <c:if test="${currentPage > 1 && currentPage < totalPages}">
             <li class="page-item"><a class="page-link"
-                                     href="<c:url value="productList">
-                <c:param name="page" value="${currentPage-1}"/>
-                <c:param name="query" value="${param.query}"/>
-                <c:param name="sortField" value="${param.sortField}"/>
-                <c:param name="sortOrder" value="${param.sortOrder}"/>
-            </c:url>">
+                                     href="<t:generateUrl page="${currentPage-1}"/>">
                     ${currentPage-1}</a></li>
+
             <li class="page-item active"><a class="page-link"
-                                            href="<c:url value="productList">
-                <c:param name="page" value="${currentPage}"/>
-                <c:param name="query" value="${param.query}"/>
-                <c:param name="sortField" value="${param.sortField}"/>
-                <c:param name="sortOrder" value="${param.sortOrder}"/>
-            </c:url>">
+                                            href="<t:generateUrl page="${currentPage}"/>">
                     ${currentPage}</a></li>
+
             <li class="page-item"><a class="page-link"
-                                     href="<c:url value="productList">
-                <c:param name="page" value="${currentPage+1}"/>
-                <c:param name="query" value="${param.query}"/>
-                <c:param name="sortField" value="${param.sortField}"/>
-                <c:param name="sortOrder" value="${param.sortOrder}"/>
-            </c:url>">
+                                     href="<t:generateUrl page="${currentPage+1}"/>">
                     ${currentPage+1}</a></li>
         </c:if>
 
         <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
             <a class="page-link"
-               href="<c:url value="productList">
-                <c:param name="page" value="${currentPage+1}"/>
-                <c:param name="query" value="${param.query}"/>
-                <c:param name="sortField" value="${param.sortField}"/>
-                <c:param name="sortOrder" value="${param.sortOrder}"/>
-            </c:url>"
+               href="<t:generateUrl page="${currentPage+1}"/>"
                aria-label="Next">
                 <span aria-hidden="true">&raquo;</span>
             </a>
         </li>
     </ul>
 </nav>
-
-
-</p>

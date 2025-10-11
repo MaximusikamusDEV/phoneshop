@@ -1,4 +1,4 @@
-package com.es.core.model.Constants;
+package com.es.core.model.constants;
 
 public class DBConstants {
     public static final String QUERY_GET_PHONE_WITH_COLORS = "select " +
@@ -14,7 +14,7 @@ public class DBConstants {
             "left join colors c on phone2color.colorId = c.id " +
             "where p.id = ? " +
             "order by p.id";
-    public static final String QUERY_FIND_ALL_WITH_COLORS_OFFSET_LIMIT = "select " +
+    public static final String QUERY_FIND_ALL = "select " +
             "p.id, p.brand, p.model, p.price, p.displaySizeInches, p.weightGr, " +
             "p.lengthMm, p.widthMm, p.heightMm, p.announced, p.deviceType, p.os, " +
             "p.displayResolution, p.pixelDensity, p.displayTechnology, " +
@@ -26,7 +26,7 @@ public class DBConstants {
             "left join phone2color on p.id = phone2color.phoneId " +
             "left join colors c on phone2color.colorId = c.id " +
             "order by p.id OFFSET ? LIMIT ?";
-    public static final String QUERY_FIND_ALL_WITH_COLORS_OFFSET_LIMIT_IN_STOCK_SORTED = "select " +
+    public static final String QUERY_FIND_ALL_IN_STOCK_SORTED = "select " +
             "p.id, p.brand, p.model, p.price, p.displaySizeInches, p.weightGr, " +
             "p.lengthMm, p.widthMm, p.heightMm, p.announced, p.deviceType, p.os, " +
             "p.displayResolution, p.pixelDensity, p.displayTechnology, " +
@@ -37,12 +37,13 @@ public class DBConstants {
             "from (select * from phones where id in ( " +
             "select p.id from phones p " +
             "inner join stocks s on p.id = s.phoneId " +
+            "where s.stock > 0 " +
             "order by %s %s OFFSET ? LIMIT ?" +
             ")) p " +
             "left join phone2color on p.id = phone2color.phoneId " +
             "left join colors c on phone2color.colorId = c.id " +
             "order by %s %s";
-    public static final String QUERY_BY_QUERY_IN_STOCK = "select " +
+    public static final String QUERY_FIND_ALL_BY_QUERY_IN_STOCK_SORTED = "select " +
             "p.id, p.brand, p.model, p.price, p.displaySizeInches, p.weightGr, " +
             "p.lengthMm, p.widthMm, p.heightMm, p.announced, p.deviceType, p.os, " +
             "p.displayResolution, p.pixelDensity, p.displayTechnology, " +
@@ -59,7 +60,7 @@ public class DBConstants {
             "left join phone2color on p.id = phone2color.phoneId " +
             "left join colors c on phone2color.colorId = c.id " +
             "order by %s %s";
-    public static final String QUERY_COUNT_PHONES_IN_STOCK_WITH_QUERY = "select count(distinct p.id) " +
+    public static final String QUERY_COUNT_PHONES_BY_QUERY_IN_STOCK = "select count(distinct p.id) " +
             "from phones p " +
             "inner join stocks s on p.id = s.phoneId " +
             "where s.stock > 0 and (lower(p.brand) like ? or lower(p.model) like ?)";

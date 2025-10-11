@@ -1,31 +1,51 @@
 package com.es.core.cart;
 
 import org.springframework.stereotype.Component;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import org.springframework.web.context.annotation.SessionScope;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
+@SessionScope
 public class Cart {
-    private Map<Long, Long> cart = new HashMap<>();
+    private List<CartItem> cartItems;
+    private int totalQuantity;
+    private BigDecimal totalCost;
 
-    public Map<Long, Long> getCart() {
-        return cart;
+    public Cart() {
+        cartItems = new ArrayList<>();
+        totalQuantity = 0;
+        totalCost = BigDecimal.ZERO;
     }
 
-    public void setCart(Map<Long, Long> cart) {
-        this.cart = cart;
+    public Cart(List<CartItem> cartItems, int totalQuantity, BigDecimal totalCost) {
+        this.cartItems = cartItems;
+        this.totalQuantity = totalQuantity;
+        this.totalCost = totalCost;
     }
 
-    @Override
-    public boolean equals(Object object) {
-        if (object == null || getClass() != object.getClass()) return false;
-        Cart cart1 = (Cart) object;
-        return Objects.equals(cart, cart1.cart);
+    public List<CartItem> getCartItems() {
+        return cartItems;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(cart);
+    public void setCartItems(List<CartItem> cartItems) {
+        this.cartItems = cartItems;
+    }
+
+    public int getTotalQuantity() {
+        return totalQuantity;
+    }
+
+    public void setTotalQuantity(int totalQuantity) {
+        this.totalQuantity = totalQuantity;
+    }
+
+    public BigDecimal getTotalCost() {
+        return totalCost;
+    }
+
+    public void setTotalCost(BigDecimal totalCost) {
+        this.totalCost = totalCost;
     }
 }

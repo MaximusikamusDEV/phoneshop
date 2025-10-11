@@ -1,58 +1,34 @@
 package com.es.phoneshop.web.controller;
 
-import com.es.core.cart.CartService;
-import com.es.phoneshop.web.controller.Constants.WebConstants;
+import com.es.phoneshop.web.dto.CartItemDto;
+import com.es.core.cart.exceptions.CartValidationException;
+import com.es.core.cart.exceptions.ItemNotExistException;
+import com.es.phoneshop.web.dto.AjaxCartResponseDto;
+import com.es.phoneshop.web.services.CartDisplayService;
 import jakarta.annotation.Resource;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindException;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import java.util.HashMap;
-import java.util.Map;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping(value = "/ajaxCart")
-@Validated
 public class AjaxCartController {
     @Resource
-    private CartService cartService;
+    private CartDisplayService cartDisplayService;
 
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> addPhone(@RequestParam @NotNull Long phoneId,
-                                        @RequestParam @NotNull
-                                        @Min(value = 1L,
-                                                message = WebConstants.QUANTITY_VALID_MESSAGE)
-                                        Long quantity) {
-        Map<String, Object> response = new HashMap<>();
-
-        try {
-            cartService.addPhone(phoneId, quantity);
-            response.put(WebConstants.STATUS_PARAM, WebConstants.SUCCESS_PARAM);
-            response.put(WebConstants.MESSAGE_PARAM, WebConstants.SUCCESS_ADD_MESSAGE);
-            response.put(WebConstants.CART_QUANTITY_ATTR, cartService.getCartQuantity());
-            response.put(WebConstants.CART_COST_ATTR, cartService.getTotalCost());
-        } catch (Exception e) {
-            e.printStackTrace();
-            response.put(WebConstants.MESSAGE_PARAM, WebConstants.ERROR_ADD_MESSAGE + e.getMessage());
-            response.put(WebConstants.STATUS_PARAM, WebConstants.ERROR_ADD_MESSAGE);
+    public ResponseEntity<AjaxCartResponseDto> addPhone(@Valid @RequestBody CartItemDto cartItemDto,
+                                                        BindingResult bindingResult) throws ItemNotExistException {
+        if (bindingResult.hasErrors()) {
+            String errorMsg = bindingResult.getFieldError().getDefaultMessage();
+            throw new CartValidationException(errorMsg);
         }
 
-        return response;
-    }
+        AjaxCartResponseDto response = cartDisplayService.addPhone(cartItemDto);
 
-    @ExceptionHandler(BindException.class)
-    @ResponseBody
-    public Map<String, Object> handleValidationExceptions (BindException ex){
-        Map<String, Object> response = new HashMap<>();
-        response.put(WebConstants.STATUS_PARAM, WebConstants.ERROR_ADD_MESSAGE);
-        response.put(WebConstants.MESSAGE_PARAM, ex.getBindingResult().getFieldError().getDefaultMessage());
-        return response;
+        return ResponseEntity.ok().body(response);
     }
 }

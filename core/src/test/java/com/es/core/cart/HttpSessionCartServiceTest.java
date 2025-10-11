@@ -1,60 +1,85 @@
 package com.es.core.cart;
 
-import com.es.core.cart.Exceptions.ItemNotExsistException;
+import com.es.core.cart.exceptions.ItemNotExistException;
 import com.es.core.model.phone.Phone;
 import com.es.core.model.phone.PhoneDao;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = "classpath:context/applicationContext-core-test.xml")
+@WebAppConfiguration
+@Transactional
 public class HttpSessionCartServiceTest {
     @Autowired
     private PhoneDao phoneDao;
     @Autowired
     HttpSessionCartService httpSessionCartService;
-    private static Phone createdPhone;
+    @Autowired
+    private Cart cart;
+    private MockHttpSession session;
+    private Phone createdPhone;
 
-    @BeforeAll
-    static void setCreatedPhone() {
-        createdPhone = new Phone();
-        createdPhone.setBrand("ARCHOSTEST");
-        createdPhone.setModel("ARCHOS 101 G9");
-        createdPhone.setPrice(null);
-        createdPhone.setDisplaySizeInches(BigDecimal.valueOf(10.1));
-        createdPhone.setWeightGr(482);
-        createdPhone.setLengthMm(BigDecimal.valueOf(276.0));
-        createdPhone.setWidthMm(BigDecimal.valueOf(167.0));
-        createdPhone.setHeightMm(BigDecimal.valueOf(12.6));
-        createdPhone.setAnnounced(null);
-        createdPhone.setDeviceType("Tablet");
-        createdPhone.setOs("Android (4.0)");
-        createdPhone.setDisplayResolution("1280 x  800");
-        createdPhone.setDisplayTechnology(null);
-        createdPhone.setBackCameraMegapixels(BigDecimal.valueOf(149));
-        createdPhone.setFrontCameraMegapixels(BigDecimal.valueOf(1.3));
-        createdPhone.setRamGb(null);
-        createdPhone.setInternalStorageGb(BigDecimal.valueOf(8.0));
-        createdPhone.setBatteryCapacityMah(null);
-        createdPhone.setTalkTimeHours(null);
-        createdPhone.setStandByTimeHours(null);
-        createdPhone.setBluetooth("2.1, EDR");
-        createdPhone.setPositioning("GPS");
-        createdPhone.setImageUrl("manufacturer/ARCHOS/ARCHOS 101 G9.jpg");
-        createdPhone.setDescription("The ARCHOS 101 G9 description");
+    @BeforeEach
+    void setUp() {
+        session = new MockHttpSession();
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setSession(session);
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+
+        createdPhone = setCreatedPhone();
+    }
+
+    @AfterEach
+    void clear(){
+        RequestContextHolder.resetRequestAttributes();
+    }
+
+    private Phone setCreatedPhone() {
+        Phone phone = new Phone();
+        phone.setBrand("ARCHOSTEST");
+        phone.setModel("ARCHOS 101 G9");
+        phone.setPrice(null);
+        phone.setDisplaySizeInches(BigDecimal.valueOf(10.1));
+        phone.setWeightGr(482);
+        phone.setLengthMm(BigDecimal.valueOf(276.0));
+        phone.setWidthMm(BigDecimal.valueOf(167.0));
+        phone.setHeightMm(BigDecimal.valueOf(12.6));
+        phone.setAnnounced(null);
+        phone.setDeviceType("Tablet");
+        phone.setOs("Android (4.0)");
+        phone.setDisplayResolution("1280 x  800");
+        phone.setDisplayTechnology(null);
+        phone.setBackCameraMegapixels(BigDecimal.valueOf(149));
+        phone.setFrontCameraMegapixels(BigDecimal.valueOf(1.3));
+        phone.setRamGb(null);
+        phone.setInternalStorageGb(BigDecimal.valueOf(8.0));
+        phone.setBatteryCapacityMah(null);
+        phone.setTalkTimeHours(null);
+        phone.setStandByTimeHours(null);
+        phone.setBluetooth("2.1, EDR");
+        phone.setPositioning("GPS");
+        phone.setImageUrl("manufacturer/ARCHOS/ARCHOS 101 G9.jpg");
+        phone.setDescription("The ARCHOS 101 G9 description");
+
+        return phone;
     }
 
     @Test
@@ -64,94 +89,129 @@ public class HttpSessionCartServiceTest {
     }
 
     @Test
-    void testAddPhone() {
-        httpSessionCartService.addPhone(createdPhone.getId(), 1L);
+    void testAddPhone() throws ItemNotExistException {
+        createdPhone.setId(1L);
+        phoneDao.save(createdPhone);
+        httpSessionCartService.addPhone(createdPhone.getId(), 1);
         Cart cart = httpSessionCartService.getCart();
         assertNotNull(cart);
-        assertTrue(cart.getCart().get(createdPhone.getId()) == 1L);
+        assertEquals(createdPhone.getId(), cart.getCartItems().get(0).getPhone().getId());
     }
 
     @Test
-    void testAddExistingPhone() {
-        httpSessionCartService.addPhone(createdPhone.getId(), 1L);
+    void testAddExistingPhone() throws ItemNotExistException {
+        createdPhone.setId(1L);
+        phoneDao.save(createdPhone);
+        httpSessionCartService.addPhone(createdPhone.getId(), 1);
         Cart cart = httpSessionCartService.getCart();
         assertNotNull(cart);
-        assertTrue(cart.getCart().get(createdPhone.getId()) == 1L);
-        httpSessionCartService.addPhone(createdPhone.getId(), 1L);
+        assertTrue(cart.getCartItems().get(0).getQuantity() == 1);
+        httpSessionCartService.addPhone(createdPhone.getId(), 5);
         cart = httpSessionCartService.getCart();
         assertNotNull(cart);
-        assertTrue(cart.getCart().get(createdPhone.getId()) == 2L);
+        assertTrue(cart.getCartItems().get(0).getQuantity() == 6);
+        assertEquals(createdPhone.getId(), cart.getCartItems().get(0).getPhone().getId());
     }
 
     @Test
     void testUpdate() {
-        Map<Long, Long> newCart = new HashMap<>();
-        newCart.put(1L, 1L);
+        List<CartItem> newCartItems = new ArrayList<>();
+        Cart newCart = new Cart();
+        newCart.setCartItems(newCartItems);
         assertNotEquals(newCart, httpSessionCartService.getCart());
-        httpSessionCartService.update(newCart);
-        assertEquals(httpSessionCartService.getCart().getCart().get(1L), newCart.get(1L));
+        httpSessionCartService.update(newCartItems);
+        assertEquals(httpSessionCartService.getCart().getCartItems(), newCartItems);
+    }
+
+    @Test
+    void testUpdateWithPhones() {
+        List<CartItem> newCartItems = new ArrayList<>();
+
+        createdPhone.setId(1L);
+        createdPhone.setPrice(BigDecimal.valueOf(10.1));
+        phoneDao.save(createdPhone);
+        Long phoneId = createdPhone.getId();
+        createdPhone.setId(phoneId);
+
+        newCartItems.add(new CartItem(createdPhone, 5));
+
+        Cart newCart = new Cart();
+        newCart.setCartItems(newCartItems);
+        assertNotEquals(newCart, httpSessionCartService.getCart());
+        httpSessionCartService.update(newCartItems);
+        assertEquals(httpSessionCartService.getCart().getCartItems(), newCartItems);
+
+        assertEquals(BigDecimal.valueOf(50.5), httpSessionCartService.getCart().getTotalCost());
     }
 
     @Test
     void getEmptyCart() {
-        HashMap<Long, Long> emptyCart = new HashMap<>();
-        httpSessionCartService.update(emptyCart);
+        List<CartItem> newCartItems = new ArrayList<>();
+        Cart newCart = new Cart();
+        newCart.setCartItems(newCartItems);
+        httpSessionCartService.update(newCartItems);
         int quantity = 5;
-        quantity = httpSessionCartService.getCartQuantity();
+        quantity = httpSessionCartService.getCart().getTotalQuantity();
         assertEquals(0, quantity);
     }
 
     @Test
-    void testRemove() throws ItemNotExsistException {
-        Map<Long, Long> newCart = new HashMap<>();
-        httpSessionCartService.update(newCart);
-        httpSessionCartService.addPhone(1L, 1L);
-        httpSessionCartService.addPhone(5L, 2L);
+    void testRemove() throws ItemNotExistException {
+        List<CartItem> newCartItems = new ArrayList<>();
+        Cart newCart = new Cart();
+        newCart.setCartItems(newCartItems);
+        httpSessionCartService.update(newCartItems);
+
+        createdPhone.setId(1L);
+        phoneDao.save(createdPhone);
+        Long firstPhoneId = createdPhone.getId();
+
+        createdPhone.setModel("ARCHOS 101 G9test");
+        createdPhone.setBrand("ARCHOS 101 G9test");
+        createdPhone.setId(2L);
+        phoneDao.save(createdPhone);
+        Long secondPhoneId = createdPhone.getId();
+
+        httpSessionCartService.addPhone(firstPhoneId, 1);
+        httpSessionCartService.addPhone(secondPhoneId, 2);
         Cart cart = httpSessionCartService.getCart();
         assertNotNull(cart);
-        assertEquals(1L, (long) cart.getCart().get(1L));
-        httpSessionCartService.remove(1L);
+        assertEquals(1, cart.getCartItems().get(0).getQuantity());
+        assertEquals(2, cart.getCartItems().get(1).getQuantity());
+        httpSessionCartService.remove(firstPhoneId);
         cart = httpSessionCartService.getCart();
         assertNotNull(cart);
-        assertNull(cart.getCart().get(1L));
+        assertEquals(2, cart.getCartItems().get(0).getQuantity());
     }
 
     @Test
     void testRemoveWithException() {
         createdPhone.setId(10L);
-        assertThrows(ItemNotExsistException.class, () -> httpSessionCartService.remove(createdPhone.getId()));
+        assertThrows(ItemNotExistException.class, () -> httpSessionCartService.remove(createdPhone.getId()));
     }
 
     @Test
-    void testGetCartQuantity() {
-        Map<Long, Long> newCart = new HashMap<>();
-        newCart.put(1L, 1L);
-        httpSessionCartService.update(newCart);
-        int quantity = httpSessionCartService.getCartQuantity();
-        assertEquals(quantity, 1);
+    void testGetTotalPrice() throws ItemNotExistException {
+        List<CartItem> newCartItems = new ArrayList<>();
+        Cart newCart = new Cart();
+        newCart.setCartItems(newCartItems);
+        httpSessionCartService.update(newCartItems);
 
-        Map<Long, Long> newCart2 = new HashMap<>();
-        newCart2.put(1L, 1L);
-        newCart2.put(2L, 1L);
-        newCart2.put(3L, 1L);
-        httpSessionCartService.update(newCart2);
-        quantity = httpSessionCartService.getCartQuantity();
-        assertEquals(quantity, 3);
-    }
-
-    @Test
-    void testGetTotalCost() {
-        createdPhone.setPrice(BigDecimal.valueOf(1000));
         createdPhone.setId(1L);
-        httpSessionCartService.addPhone(createdPhone.getId(), 1L);
-        assertEquals(BigDecimal.ZERO, httpSessionCartService.getTotalCost());
-        createdPhone.setPrice(BigDecimal.valueOf(2000));
-        createdPhone.setId(1939L);
-        createdPhone.setPrice(BigDecimal.valueOf(3000));
+        createdPhone.setPrice(BigDecimal.valueOf(10));
         phoneDao.save(createdPhone);
-        httpSessionCartService.addPhone(createdPhone.getId(), 3L);
-        assertEquals(BigDecimal.valueOf(9000.0), httpSessionCartService.getTotalCost());
+        Long firstPhoneId = createdPhone.getId();
 
+        createdPhone.setModel("ARCHOS 101 G9test");
+        createdPhone.setBrand("ARCHOS 101 G9test");
+        createdPhone.setPrice(BigDecimal.valueOf(20));
+        createdPhone.setId(2L);
+        phoneDao.save(createdPhone);
+        Long secondPhoneId = createdPhone.getId();
+
+        httpSessionCartService.addPhone(firstPhoneId, 1);
+        httpSessionCartService.addPhone(secondPhoneId, 2);
+
+        assertEquals(BigDecimal.valueOf(50.0), cart.getTotalCost());
     }
-
 }
