@@ -10,14 +10,14 @@ public class CartItemDto {
             message = WebConstants.PHONE_ID_VALID_MESSAGE)
     private Long phoneId;
 
-    @NotNull
+    @NotNull(message = WebConstants.QUANTITY_NULL_VALID_MESSAGE)
     @Min(value = 1,
             message = WebConstants.QUANTITY_VALID_MESSAGE)
-    private int quantity;
+    private Integer quantity;
 
     public CartItemDto() {}
 
-    public CartItemDto(Long phoneId, int quantity) {
+    public CartItemDto(Long phoneId, Integer quantity) {
         this.phoneId = phoneId;
         this.quantity = quantity;
     }
@@ -30,11 +30,11 @@ public class CartItemDto {
         this.phoneId = phoneId;
     }
 
-    public int getQuantity() {
+    public Integer getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
 }

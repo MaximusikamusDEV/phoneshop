@@ -8,6 +8,6 @@ public interface PhoneDao {
     void save(Phone phone);
     List<Phone> findAll(int offset, int limit);
     @SuppressWarnings("SqlSourceToSinkFlow")
-    List<Phone> findAllInStockSorted(Optional<String> query, int offset, int limit, String sortField, String sortOrder);
-    int getCountPhoneInStock(Optional<String> query);
+    List<Phone> findAllInStockSorted(String query, int offset, int limit, String sortField, String sortOrder);
+    int getCountPhoneInStock(String query);
 }

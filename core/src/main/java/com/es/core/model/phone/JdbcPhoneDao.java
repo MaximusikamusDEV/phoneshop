@@ -57,8 +57,8 @@ public class JdbcPhoneDao implements PhoneDao {
 
     @SuppressWarnings("SqlSourceToSinkFlow")
     @Override
-    public List<Phone> findAllInStockSorted(Optional<String> query, int offset, int limit, String sortField, String sortOrder) {
-        List<Phone> phones = query
+    public List<Phone> findAllInStockSorted(String query, int offset, int limit, String sortField, String sortOrder) {
+        return Optional.ofNullable(query)
                 .map(q ->
                         jdbcTemplate.query(
                                 String.format(
@@ -77,13 +77,11 @@ public class JdbcPhoneDao implements PhoneDao {
                                         sortOrder),
                                 phoneSetExtractor, offset, limit)
                 );
-
-        return phones;
     }
 
     @Override
-    public int getCountPhoneInStock(Optional<String> query) {
-        Integer countResult = query
+    public int getCountPhoneInStock(String query) {
+        Integer countResult = Optional.ofNullable(query)
                 .map(q -> jdbcTemplate.queryForObject(
                         DBConstants.QUERY_COUNT_PHONES_BY_QUERY_IN_STOCK,
                         Integer.class,

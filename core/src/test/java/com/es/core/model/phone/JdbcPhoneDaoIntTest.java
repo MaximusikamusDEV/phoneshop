@@ -162,8 +162,8 @@ public class JdbcPhoneDaoIntTest {
 
     @Test
     void testFindPhoneByQueryCount() {
-        int amountSamsung = phoneDao.getCountPhoneInStock(Optional.ofNullable("%samsung%"));
-        int amountMeizu = phoneDao.getCountPhoneInStock(Optional.ofNullable("%meizu%"));
+        int amountSamsung = phoneDao.getCountPhoneInStock("%samsung%");
+        int amountMeizu = phoneDao.getCountPhoneInStock("%meizu%");
         assertNotEquals(amountSamsung, amountMeizu);
         assertTrue(amountSamsung > 1);
         assertTrue(amountMeizu > 1);
@@ -172,7 +172,7 @@ public class JdbcPhoneDaoIntTest {
     @Test
     void testFindPhoneByQuery() {
         String preparedQuery = "%" + "samsung" + "%";
-        List<Phone> phones = phoneDao.findAllInStockSorted(Optional.of(preparedQuery), 10, 10, "p.brand", "asc");
+        List<Phone> phones = phoneDao.findAllInStockSorted(preparedQuery, 10, 10, "p.brand", "asc");
         assertFalse(phones.isEmpty());
 
         for (Phone phone : phones) {
@@ -182,15 +182,15 @@ public class JdbcPhoneDaoIntTest {
 
     @Test
     void testGetCountPhoneInStock() {
-        int amount = phoneDao.getCountPhoneInStock(Optional.empty());
+        int amount = phoneDao.getCountPhoneInStock(null);
         assertNotEquals(0, amount);
     }
 
     @Test
     void testFindAllInStockSorted() {
-        List<Phone> phones1 = phoneDao.findAllInStockSorted(Optional.empty(), 0, 10, "p.brand", "asc");
+        List<Phone> phones1 = phoneDao.findAllInStockSorted(null, 0, 10, "p.brand", "asc");
         assertFalse(phones1.isEmpty());
-        List<Phone> phones2 = phoneDao.findAllInStockSorted(Optional.empty(), 0, 10, "p.brand", "desc");
+        List<Phone> phones2 = phoneDao.findAllInStockSorted(null, 0, 10, "p.brand", "desc");
         assertFalse(phones2.isEmpty());
         assertFalse(phones1.stream().findFirst().equals(phones2.stream().findFirst()));
     }

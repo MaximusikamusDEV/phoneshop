@@ -86,7 +86,9 @@
                 <img style="width:100px; height: auto"
                      src="https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/${phone.imageUrl}">
             </td>
-            <td>${phone.brand}</td>
+            <td>
+                <a href="productDetails/${phone.id}">${phone.brand}</a>
+            </td>
             <td>${phone.model}</td>
             <td>
                 <c:forEach var="color" items="${phone.colors}">
@@ -127,7 +129,7 @@
                 }),
                 success : function(response){
                     if(response.status === 'success'){
-                        $('#cartButton').text('My cart: ' + response.totalQuantity + ' items, ' + response.totalCost + ' $');
+                        updateMiniCart();
                         quantityInput.removeClass('is-invalid');
                         quantityInput.val('1');
                     } else{
@@ -153,6 +155,20 @@
                 quantityInput.after($err);
             }
         });
+
+        function updateMiniCart(){
+            $.ajax({
+                url : '${pageContext.request.contextPath}/ajaxCart/miniCart',
+                type : 'GET',
+                dataType : 'json',
+                success : function(miniCart){
+                    $('#cartButton').text('My cart: ' + miniCart.totalQuantity + ' items, ' + miniCart.totalCost + ' $');
+                },
+                error : function(xhr){
+                    $('#cartButton').text('Error updating mini cart');
+                }
+            })
+        }
     });
 </script>
 

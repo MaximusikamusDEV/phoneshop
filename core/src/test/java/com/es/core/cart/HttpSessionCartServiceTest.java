@@ -3,6 +3,9 @@ package com.es.core.cart;
 import com.es.core.cart.exceptions.ItemNotExistException;
 import com.es.core.model.phone.Phone;
 import com.es.core.model.phone.PhoneDao;
+import com.es.core.model.phone.Stock;
+import com.es.core.model.phone.StockDao;
+import com.es.core.order.OutOfStockException;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,12 +17,15 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+
 import java.math.BigDecimal;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +40,8 @@ public class HttpSessionCartServiceTest {
     HttpSessionCartService httpSessionCartService;
     @Autowired
     private Cart cart;
+    @Autowired
+    private StockDao stockDao;
     private MockHttpSession session;
     private Phone createdPhone;
 
@@ -48,11 +56,11 @@ public class HttpSessionCartServiceTest {
     }
 
     @AfterEach
-    void clear(){
+    void clear() {
         RequestContextHolder.resetRequestAttributes();
     }
 
-    private Phone setCreatedPhone() {
+    Phone setCreatedPhone() {
         Phone phone = new Phone();
         phone.setBrand("ARCHOSTEST");
         phone.setModel("ARCHOS 101 G9");
@@ -82,6 +90,16 @@ public class HttpSessionCartServiceTest {
         return phone;
     }
 
+    void savePhoneWithStock(Phone phone, int stock, int reserved) {
+        phoneDao.save(phone);
+
+        Stock phoneStock = new Stock();
+        phoneStock.setStock(stock);
+        phoneStock.setReserved(reserved);
+        phoneStock.setPhone(phone);
+        stockDao.setStock(phoneStock);
+    }
+
     @Test
     void testGetCart() {
         Cart cart = httpSessionCartService.getCart();
@@ -89,9 +107,10 @@ public class HttpSessionCartServiceTest {
     }
 
     @Test
-    void testAddPhone() throws ItemNotExistException {
+    void testAddPhone() throws ItemNotExistException, OutOfStockException {
         createdPhone.setId(1L);
-        phoneDao.save(createdPhone);
+        savePhoneWithStock(createdPhone, 100, 0);
+
         httpSessionCartService.addPhone(createdPhone.getId(), 1);
         Cart cart = httpSessionCartService.getCart();
         assertNotNull(cart);
@@ -99,9 +118,11 @@ public class HttpSessionCartServiceTest {
     }
 
     @Test
-    void testAddExistingPhone() throws ItemNotExistException {
+    void testAddExistingPhone() throws ItemNotExistException, OutOfStockException {
         createdPhone.setId(1L);
-        phoneDao.save(createdPhone);
+        createdPhone.setId(1L);
+        savePhoneWithStock(createdPhone, 100, 0);
+
         httpSessionCartService.addPhone(createdPhone.getId(), 1);
         Cart cart = httpSessionCartService.getCart();
         assertNotNull(cart);
@@ -114,7 +135,7 @@ public class HttpSessionCartServiceTest {
     }
 
     @Test
-    void testUpdate() {
+    void testUpdate() throws OutOfStockException {
         List<CartItem> newCartItems = new ArrayList<>();
         Cart newCart = new Cart();
         newCart.setCartItems(newCartItems);
@@ -124,12 +145,14 @@ public class HttpSessionCartServiceTest {
     }
 
     @Test
-    void testUpdateWithPhones() {
+    void testUpdateWithPhones() throws OutOfStockException {
         List<CartItem> newCartItems = new ArrayList<>();
 
         createdPhone.setId(1L);
         createdPhone.setPrice(BigDecimal.valueOf(10.1));
-        phoneDao.save(createdPhone);
+        createdPhone.setId(1L);
+        savePhoneWithStock(createdPhone, 100, 0);
+
         Long phoneId = createdPhone.getId();
         createdPhone.setId(phoneId);
 
@@ -145,7 +168,7 @@ public class HttpSessionCartServiceTest {
     }
 
     @Test
-    void getEmptyCart() {
+    void getEmptyCart() throws OutOfStockException {
         List<CartItem> newCartItems = new ArrayList<>();
         Cart newCart = new Cart();
         newCart.setCartItems(newCartItems);
@@ -156,20 +179,20 @@ public class HttpSessionCartServiceTest {
     }
 
     @Test
-    void testRemove() throws ItemNotExistException {
+    void testRemove() throws ItemNotExistException, OutOfStockException {
         List<CartItem> newCartItems = new ArrayList<>();
         Cart newCart = new Cart();
         newCart.setCartItems(newCartItems);
         httpSessionCartService.update(newCartItems);
 
         createdPhone.setId(1L);
-        phoneDao.save(createdPhone);
+        savePhoneWithStock(createdPhone, 100, 0);
         Long firstPhoneId = createdPhone.getId();
 
         createdPhone.setModel("ARCHOS 101 G9test");
         createdPhone.setBrand("ARCHOS 101 G9test");
         createdPhone.setId(2L);
-        phoneDao.save(createdPhone);
+        savePhoneWithStock(createdPhone, 100, 0);
         Long secondPhoneId = createdPhone.getId();
 
         httpSessionCartService.addPhone(firstPhoneId, 1);
@@ -191,7 +214,7 @@ public class HttpSessionCartServiceTest {
     }
 
     @Test
-    void testGetTotalPrice() throws ItemNotExistException {
+    void testGetTotalPrice() throws ItemNotExistException, OutOfStockException {
         List<CartItem> newCartItems = new ArrayList<>();
         Cart newCart = new Cart();
         newCart.setCartItems(newCartItems);
@@ -199,14 +222,14 @@ public class HttpSessionCartServiceTest {
 
         createdPhone.setId(1L);
         createdPhone.setPrice(BigDecimal.valueOf(10));
-        phoneDao.save(createdPhone);
+        savePhoneWithStock(createdPhone, 100, 0);
         Long firstPhoneId = createdPhone.getId();
 
         createdPhone.setModel("ARCHOS 101 G9test");
         createdPhone.setBrand("ARCHOS 101 G9test");
         createdPhone.setPrice(BigDecimal.valueOf(20));
         createdPhone.setId(2L);
-        phoneDao.save(createdPhone);
+        savePhoneWithStock(createdPhone, 100, 0);
         Long secondPhoneId = createdPhone.getId();
 
         httpSessionCartService.addPhone(firstPhoneId, 1);
