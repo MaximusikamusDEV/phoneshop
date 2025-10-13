@@ -1,19 +1,18 @@
-package com.es.core.model.phone.ResultSetExtractors;
+package com.es.core.model.phone.resultSetExtractors;
 
 import com.es.core.model.phone.Color;
-import com.es.core.model.phone.Mappers.ColorMapper;
-import com.es.core.model.phone.Mappers.PhoneMapper;
+import com.es.core.model.phone.mappers.ColorMapper;
+import com.es.core.model.phone.mappers.PhoneMapper;
 import com.es.core.model.phone.Phone;
 import jakarta.annotation.Resource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Component;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
+import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.HashSet;
 import java.util.ArrayList;
 
@@ -26,7 +25,7 @@ public class PhoneSetExtractor implements ResultSetExtractor<List<Phone>> {
 
     @Override
     public List<Phone> extractData(ResultSet rs) throws SQLException, DataAccessException {
-        Map<Long, Phone> phoneMap = new HashMap<>();
+        Map<Long, Phone> phoneMap = new LinkedHashMap<>();
 
         while (rs.next()) {
             Long phoneId = rs.getLong("id");

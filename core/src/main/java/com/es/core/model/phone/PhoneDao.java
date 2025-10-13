@@ -7,4 +7,7 @@ public interface PhoneDao {
     Optional<Phone> get(Long key);
     void save(Phone phone);
     List<Phone> findAll(int offset, int limit);
+    @SuppressWarnings("SqlSourceToSinkFlow")
+    List<Phone> findAllInStockSorted(Optional<String> query, int offset, int limit, String sortField, String sortOrder);
+    int getCountPhoneInStock(Optional<String> query);
 }

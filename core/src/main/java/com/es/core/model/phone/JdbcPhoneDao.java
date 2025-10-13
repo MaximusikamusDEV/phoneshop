@@ -1,9 +1,10 @@
 package com.es.core.model.phone;
 
-import com.es.core.model.Constants.DBConstants;
-import com.es.core.model.Constants.ExceptionConstants;
-import com.es.core.model.Exceptions.DatabaseUpdateException;
-import com.es.core.model.phone.ResultSetExtractors.PhoneSetExtractor;
+import com.es.core.model.constants.DBConstants;
+import com.es.core.model.constants.ExceptionConstants;
+import com.es.core.model.exceptions.DatabaseException;
+import com.es.core.model.exceptions.DatabaseUpdateException;
+import com.es.core.model.phone.resultSetExtractors.PhoneSetExtractor;
 import jakarta.annotation.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -30,14 +31,8 @@ public class JdbcPhoneDao implements PhoneDao {
     @Override
     public Optional<Phone> get(final Long key) {
         List<Phone> phones = jdbcTemplate.query(DBConstants.QUERY_GET_PHONE_WITH_COLORS, phoneSetExtractor, key);
-        Optional<Phone> finalPhone;
 
-        if (phones != null && !phones.isEmpty())
-            finalPhone = Optional.of(phones.stream().findFirst().orElse(null));
-        else
-            return Optional.empty();
-
-        return finalPhone;
+        return phones.stream().findFirst();
     }
 
     @Override
@@ -57,7 +52,49 @@ public class JdbcPhoneDao implements PhoneDao {
 
     @Override
     public List<Phone> findAll(int offset, int limit) {
-        return jdbcTemplate.query(DBConstants.QUERY_FIND_ALL_WITH_COLORS_OFFSET_LIMIT, phoneSetExtractor, offset, limit);
+        return jdbcTemplate.query(DBConstants.QUERY_FIND_ALL, phoneSetExtractor, offset, limit);
+    }
+
+    @SuppressWarnings("SqlSourceToSinkFlow")
+    @Override
+    public List<Phone> findAllInStockSorted(Optional<String> query, int offset, int limit, String sortField, String sortOrder) {
+        List<Phone> phones = query
+                .map(q ->
+                        jdbcTemplate.query(
+                                String.format(
+                                        DBConstants.QUERY_FIND_ALL_BY_QUERY_IN_STOCK_SORTED,
+                                        sortField,
+                                        sortOrder,
+                                        sortField,
+                                        sortOrder),
+                                phoneSetExtractor, q, q, offset, limit)
+                ).orElseGet(() ->
+                        jdbcTemplate.query(String.format(
+                                        DBConstants.QUERY_FIND_ALL_IN_STOCK_SORTED,
+                                        sortField,
+                                        sortOrder,
+                                        sortField,
+                                        sortOrder),
+                                phoneSetExtractor, offset, limit)
+                );
+
+        return phones;
+    }
+
+    @Override
+    public int getCountPhoneInStock(Optional<String> query) {
+        Integer countResult = query
+                .map(q -> jdbcTemplate.queryForObject(
+                        DBConstants.QUERY_COUNT_PHONES_BY_QUERY_IN_STOCK,
+                        Integer.class,
+                        q,
+                        q))
+                .orElseGet(() ->
+                        jdbcTemplate.queryForObject(
+                                DBConstants.QUERY_COUNT_PHONES_IN_STOCK,
+                                Integer.class));
+
+        return Optional.ofNullable(countResult).orElseThrow(() -> new DatabaseException(ExceptionConstants.DATABASE_PROBLEM));
     }
 
     private void newPhoneIdFromDb(Phone phone) {

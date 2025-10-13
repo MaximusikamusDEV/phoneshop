@@ -1,8 +1,8 @@
 package com.es.core.model.phone;
 
-import com.es.core.model.Constants.DBConstants;
-import com.es.core.model.Constants.ExceptionConstants;
-import com.es.core.model.Exceptions.DatabaseUpdateException;
+import com.es.core.model.constants.DBConstants;
+import com.es.core.model.constants.ExceptionConstants;
+import com.es.core.model.exceptions.DatabaseUpdateException;
 import jakarta.annotation.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -11,7 +11,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-
 import java.util.Optional;
 
 @Component

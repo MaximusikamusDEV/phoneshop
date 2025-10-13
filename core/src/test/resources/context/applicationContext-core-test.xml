@@ -11,6 +11,10 @@
 
     <context:component-scan base-package="com.es.core" />
 
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
     <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="driverClassName" value="${db.driver}" />
         <property name="url" value="${db.url}" />
@@ -27,7 +31,7 @@
     </bean>
 
     <jdbc:initialize-database enabled="true" data-source="dataSource">
-        <jdbc:script location="classpath:db/schema.sql" />
+        <jdbc:script location="classpath:db/schema-test.sql" />
         <jdbc:script location="classpath:db/demodata-phones-test.sql" />
     </jdbc:initialize-database>
 </beans>
