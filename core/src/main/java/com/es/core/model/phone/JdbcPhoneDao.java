@@ -42,10 +42,10 @@ public class JdbcPhoneDao implements PhoneDao {
             newPhoneIdFromDb(phone);
         } else {
             if (isExistingPhone(phone)) {
-                newPhoneIdFromDb(phone);
-            } else {
                 jdbcTemplate.update(DBConstants.QUERY_DELETE_PHONE_COLORS, phone.getId());
                 jdbcColorDao.savePhoneColors(phone);
+            } else {
+                newPhoneIdFromDb(phone);
             }
         }
     }
@@ -115,6 +115,6 @@ public class JdbcPhoneDao implements PhoneDao {
         SqlParameterSource parameters = new BeanPropertySqlParameterSource(phone);
         int rowsUpdated = namedParameterJdbcTemplate.update(DBConstants.QUERY_UPDATE_PHONE, parameters);
 
-        return rowsUpdated == 0;
+        return rowsUpdated != 0;
     }
 }

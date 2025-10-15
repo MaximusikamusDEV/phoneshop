@@ -6,9 +6,11 @@ import com.es.core.model.phone.PhoneDao;
 import com.es.core.model.phone.Stock;
 import com.es.core.model.phone.StockDao;
 import com.es.core.order.OutOfStockException;
-import org.junit.jupiter.api.*;
+import jakarta.annotation.Resource;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.ContextConfiguration;
@@ -17,12 +19,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
 import java.math.BigDecimal;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
@@ -34,13 +33,13 @@ import java.util.List;
 @WebAppConfiguration
 @Transactional
 public class HttpSessionCartServiceTest {
-    @Autowired
+    @Resource
     private PhoneDao phoneDao;
-    @Autowired
+    @Resource
     HttpSessionCartService httpSessionCartService;
-    @Autowired
+    @Resource
     private Cart cart;
-    @Autowired
+    @Resource
     private StockDao stockDao;
     private MockHttpSession session;
     private Phone createdPhone;
@@ -126,11 +125,11 @@ public class HttpSessionCartServiceTest {
         httpSessionCartService.addPhone(createdPhone.getId(), 1);
         Cart cart = httpSessionCartService.getCart();
         assertNotNull(cart);
-        assertTrue(cart.getCartItems().get(0).getQuantity() == 1);
+        assertEquals(1, cart.getCartItems().get(0).getQuantity());
         httpSessionCartService.addPhone(createdPhone.getId(), 5);
         cart = httpSessionCartService.getCart();
         assertNotNull(cart);
-        assertTrue(cart.getCartItems().get(0).getQuantity() == 6);
+        assertEquals(6, cart.getCartItems().get(0).getQuantity());
         assertEquals(createdPhone.getId(), cart.getCartItems().get(0).getPhone().getId());
     }
 
@@ -236,5 +235,25 @@ public class HttpSessionCartServiceTest {
         httpSessionCartService.addPhone(secondPhoneId, 2);
 
         assertEquals(BigDecimal.valueOf(50.0), cart.getTotalCost());
+    }
+
+    @Test
+    void testCheckOutOfStock() throws ItemNotExistException, OutOfStockException {
+        List<CartItem> newCartItems = new ArrayList<>();
+
+        createdPhone.setId(1L);
+        createdPhone.setPrice(BigDecimal.valueOf(10.1));
+        createdPhone.setId(1L);
+        savePhoneWithStock(createdPhone, 1, 0);
+
+        Long phoneId = createdPhone.getId();
+        createdPhone.setId(phoneId);
+
+        newCartItems.add(new CartItem(createdPhone, 5));
+
+        Cart newCart = new Cart();
+        newCart.setCartItems(newCartItems);
+
+        assertThrows(OutOfStockException.class, () -> httpSessionCartService.addPhone(phoneId, 5));
     }
 }
