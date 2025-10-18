@@ -15,38 +15,41 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class GlobalExceptionHandler {
     private static final Logger logger = (Logger) LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(InvalidPageNumberException.class)
-    public String handleInvalidPageNumber(InvalidPageNumberException e, Model model) {
-        model.addAttribute(WebConstants.MESSAGE_PARAM, e.getMessage());
-        logger.error("{}{}", WebConstants.MESSAGE_PARAM, e.getMessage());
+    @ExceptionHandler({InvalidPageNumberException.class, ItemNotExistException.class})
+    public String handleInvalidPageNumber(Exception e, Model model) {
+        handleError(
+                e.getMessage(),
+                WebConstants.MESSAGE_PARAM,
+                e.getMessage(),
+                model);
+
         return "errors/error404";
     }
 
-    @ExceptionHandler(ItemNotExistException.class)
-    public String handleItemNotExistException(ItemNotExistException e, Model model) {
-        model.addAttribute(WebConstants.MESSAGE_PARAM, e.getMessage());
-        logger.error("{}{}", WebConstants.MESSAGE_PARAM, e.getMessage());
-        return "errors/error404";
-    }
-
-    @ExceptionHandler(DatabaseUpdateException.class)
+    @ExceptionHandler({DatabaseUpdateException.class, DatabaseException.class})
     public String handleDatabaseUpdateException(Exception e, Model model) {
-        model.addAttribute(WebConstants.MESSAGE_PARAM, WebConstants.ERROR_UNEXPECTED_MESSAGE + e.getMessage());
-        logger.error("{}{}", WebConstants.ERROR_UNEXPECTED_MESSAGE, e.getMessage());
-        return "errors/error500";
-    }
+        handleError(
+                WebConstants.ERROR_UNEXPECTED_MESSAGE + e.getMessage(),
+                WebConstants.ERROR_UNEXPECTED_MESSAGE,
+                e.getMessage(),
+                model);
 
-    @ExceptionHandler(DatabaseException.class)
-    public String handleDatabaseException(Exception e, Model model) {
-        model.addAttribute(WebConstants.MESSAGE_PARAM, WebConstants.ERROR_UNEXPECTED_MESSAGE + e.getMessage());
-        logger.error("{}{}", WebConstants.ERROR_UNEXPECTED_MESSAGE, e.getMessage());
         return "errors/error500";
     }
 
     @ExceptionHandler(Exception.class)
     public String handleOtherExceptions(Exception e, Model model) {
-        model.addAttribute(WebConstants.MESSAGE_PARAM, WebConstants.ERROR_UNEXPECTED_MESSAGE + e.getMessage());
-        logger.error("{}{}", WebConstants.ERROR_UNEXPECTED_MESSAGE, e.getMessage());
+        handleError(
+                WebConstants.ERROR_UNEXPECTED_MESSAGE + e.getMessage(),
+                WebConstants.ERROR_UNEXPECTED_MESSAGE,
+                e.getMessage(),
+                model);
+
         return "errors/error";
+    }
+
+    private void handleError(String message, String loggStatus, String loggMessage, Model model) {
+        logger.error("{}{}", loggStatus, loggMessage);
+        model.addAttribute(WebConstants.MESSAGE_PARAM, message);
     }
 }

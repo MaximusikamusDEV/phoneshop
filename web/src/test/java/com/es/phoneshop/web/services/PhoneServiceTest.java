@@ -21,11 +21,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
-public class PhoneDisplayServiceTest {
+public class PhoneServiceTest {
     @Mock
     private PhoneDao phoneDao;
     @InjectMocks
-    private PhoneDisplayServiceImpl phoneDisplayService;
+    private PhoneServiceImpl phoneDisplayService;
 
     @BeforeEach
     void setUp() {

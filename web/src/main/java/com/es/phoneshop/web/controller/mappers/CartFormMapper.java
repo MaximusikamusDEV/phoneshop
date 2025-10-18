@@ -6,20 +6,20 @@ import com.es.core.cart.exceptions.ItemNotExistException;
 import com.es.core.model.phone.Phone;
 import com.es.core.model.phone.PhoneDao;
 import com.es.phoneshop.web.constants.WebConstants;
-import com.es.phoneshop.web.dto.CartDto;
-import com.es.phoneshop.web.dto.CartItemDto;
+import com.es.phoneshop.web.dto.CartForm;
+import com.es.phoneshop.web.dto.CartItemForm;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class CartDtoMapper {
+public class CartFormMapper {
     @Resource
     private PhoneDao phoneDao;
 
-    public List<CartItem> convertToCartItems(CartDto cartDto) {
-        return cartDto.getItems().stream()
+    public List<CartItem> convertToCartItems(CartForm cartForm) {
+        return cartForm.getItems().stream()
                 .map(dtoItem -> {
                     Phone phone = phoneDao.get(dtoItem.getPhoneId())
                             .orElseThrow(() -> new ItemNotExistException(WebConstants.ERROR_NO_PHONE_WITH_ID_MESSAGE));
@@ -27,16 +27,16 @@ public class CartDtoMapper {
                 }).collect(Collectors.toList());
     }
 
-    public CartDto convertToCartDto(Cart cart) {
-        CartDto cartDto = new CartDto();
-        List<CartItemDto> cartItems = cart.getCartItems().stream()
-                .map(cartItem -> new CartItemDto(
+    public CartForm convertToCartDto(Cart cart) {
+        CartForm cartForm = new CartForm();
+        List<CartItemForm> cartItems = cart.getCartItems().stream()
+                .map(cartItem -> new CartItemForm(
                         cartItem.getPhone().getId(),
                         cartItem.getQuantity()
                 ))
                 .collect(Collectors.toList());
-        cartDto.setItems(cartItems);
+        cartForm.setItems(cartItems);
 
-        return cartDto;
+        return cartForm;
     }
 }

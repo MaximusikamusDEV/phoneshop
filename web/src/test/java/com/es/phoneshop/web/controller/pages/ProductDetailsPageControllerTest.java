@@ -4,7 +4,7 @@ import com.es.core.cart.Cart;
 import com.es.core.cart.CartService;
 import com.es.core.model.phone.Phone;
 import com.es.phoneshop.web.constants.WebConstants;
-import com.es.phoneshop.web.services.PhoneDisplayService;
+import com.es.phoneshop.web.services.PhoneService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,7 +27,7 @@ public class ProductDetailsPageControllerTest {
     @Mock
     private CartService cartService;
     @Mock
-    private PhoneDisplayService phoneDisplayService;
+    private PhoneService phoneService;
     @InjectMocks
     private ProductDetailsPageController productDetailsPageController;
 
@@ -45,11 +45,11 @@ public class ProductDetailsPageControllerTest {
         Phone phone = new Phone();
 
         when(cartService.getCart()).thenReturn(cart);
-        when(phoneDisplayService.getPhoneById(1L)).thenReturn(phone);
+        when(phoneService.getPhoneById(1L)).thenReturn(phone);
 
         String response = productDetailsPageController.showProductDetails(1L, model);
 
-        verify(phoneDisplayService).getPhoneById(1L);
+        verify(phoneService).getPhoneById(1L);
         verify(cartService, times(2)).getCart();
         assertEquals(BigDecimal.TEN, model.getAttribute(WebConstants.CART_COST_ATTR));
         assertEquals(1, model.getAttribute(WebConstants.CART_QUANTITY_ATTR));

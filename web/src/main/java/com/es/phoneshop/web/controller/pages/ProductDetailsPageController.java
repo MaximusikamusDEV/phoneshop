@@ -2,7 +2,7 @@ package com.es.phoneshop.web.controller.pages;
 
 import com.es.core.cart.CartService;
 import com.es.phoneshop.web.constants.WebConstants;
-import com.es.phoneshop.web.services.PhoneDisplayService;
+import com.es.phoneshop.web.services.PhoneService;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RequestMapping(value = "/productDetails")
 public class ProductDetailsPageController {
     @Resource
-    private PhoneDisplayService phoneDisplayService;
+    private PhoneService phoneService;
     @Resource
     private CartService cartService;
 
@@ -22,7 +22,7 @@ public class ProductDetailsPageController {
     public String showProductDetails(@PathVariable("phoneId") Long id, Model model){
         model.addAttribute(WebConstants.CART_COST_ATTR, cartService.getCart().getTotalCost());
         model.addAttribute(WebConstants.CART_QUANTITY_ATTR, cartService.getCart().getTotalQuantity());
-        model.addAttribute(WebConstants.PHONE_ATTR, phoneDisplayService.getPhoneById(id));
+        model.addAttribute(WebConstants.PHONE_ATTR, phoneService.getPhoneById(id));
         return "productDetails";
     }
 }

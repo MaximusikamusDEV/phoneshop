@@ -1,6 +1,7 @@
 package com.es.core.cart;
 
 import com.es.core.cart.exceptions.ItemNotExistException;
+import com.es.core.model.exceptions.HighQuantityException;
 import com.es.core.model.phone.Phone;
 import com.es.core.model.phone.PhoneDao;
 import com.es.core.model.phone.Stock;
@@ -24,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -126,11 +126,24 @@ public class HttpSessionCartServiceTest {
         Cart cart = httpSessionCartService.getCart();
         assertNotNull(cart);
         assertEquals(1, cart.getCartItems().get(0).getQuantity());
-        httpSessionCartService.addPhone(createdPhone.getId(), 5);
+        httpSessionCartService.addPhone(createdPhone.getId(), 4);
         cart = httpSessionCartService.getCart();
         assertNotNull(cart);
-        assertEquals(6, cart.getCartItems().get(0).getQuantity());
+        assertEquals(5, cart.getCartItems().get(0).getQuantity());
         assertEquals(createdPhone.getId(), cart.getCartItems().get(0).getPhone().getId());
+    }
+
+    @Test
+    void testAddExistingPhoneMoreThanFive() throws ItemNotExistException, OutOfStockException {
+        createdPhone.setId(1L);
+        createdPhone.setId(1L);
+        savePhoneWithStock(createdPhone, 100, 0);
+
+        httpSessionCartService.addPhone(createdPhone.getId(), 1);
+        Cart cart = httpSessionCartService.getCart();
+        assertNotNull(cart);
+        assertEquals(1, cart.getCartItems().get(0).getQuantity());
+        assertThrows(HighQuantityException.class, () -> httpSessionCartService.addPhone(createdPhone.getId(), 5));
     }
 
     @Test

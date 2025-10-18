@@ -6,20 +6,21 @@ import com.es.phoneshop.web.constants.WebConstants;
 import com.es.phoneshop.web.enums.SortField;
 import com.es.phoneshop.web.enums.SortOrder;
 import com.es.phoneshop.web.exceptions.InvalidPageNumberException;
-import com.es.phoneshop.web.services.PhoneDisplayService;
+import com.es.phoneshop.web.services.PhoneService;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+
 import java.util.List;
 
 @Controller
 @RequestMapping(value = "/productList")
 public class ProductListPageController {
     @Resource
-    private PhoneDisplayService phoneDisplayService;
+    private PhoneService phoneService;
     @Resource
     private CartService cartService;
 
@@ -31,9 +32,9 @@ public class ProductListPageController {
             @RequestParam(required = false, defaultValue = WebConstants.ASC_VALUE) String sortOrder,
             Model model) {
         String validatedQuery = validateQuery(query);
-        int totalPages = phoneDisplayService.getTotalPageQuantity(validatedQuery);
+        int totalPages = phoneService.getTotalPageQuantity(validatedQuery);
         validatePage(page, totalPages);
-        List<Phone> phones = phoneDisplayService.getAllPhones(
+        List<Phone> phones = phoneService.getAllPhones(
                 page,
                 validatedQuery,
                 SortField.valueOfCode(sortField).getCode(),
@@ -48,15 +49,17 @@ public class ProductListPageController {
     }
 
     private void validatePage(int page, int totalPages) {
-        if (page < 1 || page > totalPages) {
+        if (totalPages == 0)
+            return;
+
+        if (page < 1 || page > totalPages)
             throw new InvalidPageNumberException(WebConstants.ERROR_INVALID_PAGE_NUMBER_MESSAGE);
-        }
     }
 
     private String validateQuery(String query) {
-        if (query != null && !query.isEmpty()) {
+        if (query != null && !query.isEmpty())
             return "%" + query.toLowerCase() + "%";
-        }
+
 
         return query;
     }

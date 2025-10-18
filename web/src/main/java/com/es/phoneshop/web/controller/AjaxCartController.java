@@ -2,13 +2,14 @@ package com.es.phoneshop.web.controller;
 
 import com.es.core.cart.Cart;
 import com.es.core.cart.CartService;
+import com.es.core.model.exceptions.HighQuantityException;
 import com.es.core.order.OutOfStockException;
 import com.es.phoneshop.web.constants.WebConstants;
-import com.es.phoneshop.web.dto.CartItemDto;
+import com.es.phoneshop.web.dto.CartItemForm;
 import com.es.core.cart.exceptions.CartValidationException;
 import com.es.core.cart.exceptions.ItemNotExistException;
 import com.es.phoneshop.web.dto.AjaxCartResponseDto;
-import com.es.phoneshop.web.dto.MiniCartDto;
+import com.es.phoneshop.web.dto.MiniCart;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -29,8 +30,8 @@ public class AjaxCartController {
 
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<AjaxCartResponseDto> addPhone(@Valid @RequestBody CartItemDto cartItemDto,
-                                                        BindingResult bindingResult) throws ItemNotExistException, OutOfStockException {
+    public ResponseEntity<AjaxCartResponseDto> addPhone(@Valid @RequestBody CartItemForm cartItemForm,
+                                                        BindingResult bindingResult) throws ItemNotExistException, OutOfStockException, HighQuantityException {
         if (bindingResult.hasErrors()) {
             String errorMsg = Optional.ofNullable(bindingResult.getFieldError())
                     .map(FieldError::getDefaultMessage)
@@ -38,7 +39,7 @@ public class AjaxCartController {
             throw new CartValidationException(errorMsg);
         }
 
-        cartService.addPhone(cartItemDto.getPhoneId(), cartItemDto.getQuantity());
+        cartService.addPhone(cartItemForm.getPhoneId(), cartItemForm.getQuantity());
         AjaxCartResponseDto response = createAjaxCartResponse();
 
         return ResponseEntity.ok().body(response);
@@ -46,9 +47,9 @@ public class AjaxCartController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/miniCart")
     @ResponseBody
-    public ResponseEntity<MiniCartDto> getMiniCart() {
+    public ResponseEntity<MiniCart> getMiniCart() {
         Cart cart = cartService.getCart();
-        MiniCartDto miniCart = new MiniCartDto();
+        MiniCart miniCart = new MiniCart();
         miniCart.setTotalCost(cart.getTotalCost());
         miniCart.setTotalQuantity(cart.getTotalQuantity());
 

@@ -7,8 +7,8 @@ import com.es.core.cart.exceptions.ItemNotExistException;
 import com.es.core.order.OutOfStockException;
 import com.es.phoneshop.web.constants.WebConstants;
 import com.es.phoneshop.web.dto.AjaxCartResponseDto;
-import com.es.phoneshop.web.dto.CartItemDto;
-import com.es.phoneshop.web.dto.MiniCartDto;
+import com.es.phoneshop.web.dto.CartItemForm;
+import com.es.phoneshop.web.dto.MiniCart;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,7 +42,7 @@ public class AjaxCartControllerTest {
 
     @Test
     void testAddPhoneSuccess() throws ItemNotExistException, OutOfStockException {
-        CartItemDto dto = new CartItemDto();
+        CartItemForm dto = new CartItemForm();
         dto.setPhoneId(1L);
         dto.setQuantity(2);
 
@@ -58,7 +58,7 @@ public class AjaxCartControllerTest {
 
     @Test
     void testAddPhoneBindingResult() throws ItemNotExistException {
-        CartItemDto dto = new CartItemDto();
+        CartItemForm dto = new CartItemForm();
         dto.setPhoneId(1L);
         dto.setQuantity(2);
 
@@ -75,7 +75,7 @@ public class AjaxCartControllerTest {
 
         when(cartService.getCart()).thenReturn(cart);
 
-        ResponseEntity<MiniCartDto> response = ajaxCartController.getMiniCart();
+        ResponseEntity<MiniCart> response = ajaxCartController.getMiniCart();
 
         assertEquals(0, response.getBody().getTotalCost().compareTo(BigDecimal.TEN));
         assertEquals(1, response.getBody().getTotalQuantity());

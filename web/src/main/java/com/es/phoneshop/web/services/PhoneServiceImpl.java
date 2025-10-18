@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class PhoneDisplayServiceImpl implements PhoneDisplayService {
+public class PhoneServiceImpl implements PhoneService {
     @Resource
     private PhoneDao phoneDao;
 

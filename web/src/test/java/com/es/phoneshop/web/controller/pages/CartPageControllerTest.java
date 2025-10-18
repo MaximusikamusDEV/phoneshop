@@ -7,9 +7,9 @@ import com.es.core.cart.exceptions.ItemNotExistException;
 import com.es.core.model.phone.Phone;
 import com.es.core.order.OutOfStockException;
 import com.es.phoneshop.web.constants.WebConstants;
-import com.es.phoneshop.web.controller.mappers.CartDtoMapper;
-import com.es.phoneshop.web.dto.CartDto;
-import com.es.phoneshop.web.dto.CartItemDto;
+import com.es.phoneshop.web.controller.mappers.CartFormMapper;
+import com.es.phoneshop.web.dto.CartForm;
+import com.es.phoneshop.web.dto.CartItemForm;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,15 +20,17 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.ui.ExtendedModelMap;
 import org.springframework.ui.Model;
+import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.doNothing;
 
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
@@ -36,7 +38,7 @@ public class CartPageControllerTest {
     @Mock
     private CartService cartService;
     @Mock
-    private CartDtoMapper cartDtoMapper;
+    private CartFormMapper cartFormMapper;
     @Mock
     BindingResult bindingResult;
     @InjectMocks
@@ -53,10 +55,10 @@ public class CartPageControllerTest {
         cart.setTotalCost(BigDecimal.TEN);
         cart.setTotalQuantity(1);
         Model model = new ExtendedModelMap();
-        CartDto cartDto = new CartDto();
+        CartForm cartForm = new CartForm();
 
         when(cartService.getCart()).thenReturn(cart);
-        when(cartDtoMapper.convertToCartDto(cart)).thenReturn(cartDto);
+        when(cartFormMapper.convertToCartDto(cart)).thenReturn(cartForm);
 
         String response = cartPageController.getCart(model);
 
@@ -64,31 +66,29 @@ public class CartPageControllerTest {
         assertEquals(BigDecimal.TEN, model.getAttribute(WebConstants.CART_COST_ATTR));
         assertEquals(1, model.getAttribute(WebConstants.CART_QUANTITY_ATTR));
         assertEquals(cart, model.getAttribute(WebConstants.CART_ATTR));
-        assertEquals(cartDto, model.getAttribute(WebConstants.CART_DTO_ATTR));
+        assertEquals(cartForm, model.getAttribute(WebConstants.CART_FORM_ATTR));
         assertEquals("cart", response);
     }
 
 
     @Test
-    void testUpdateCartWithEmptyCart() throws OutOfStockException {
+    void testUpdateCartWithEmptyCart(){
         Cart cart = new Cart();
         cart.setTotalCost(BigDecimal.TEN);
         cart.setTotalQuantity(1);
         Model model = new ExtendedModelMap();
-        CartDto cartDto = new CartDto();
-        Long deletePhoneId = 1L;
+        CartForm cartForm = new CartForm();
 
         when(cartService.getCart()).thenReturn(cart);
-        when(cartDtoMapper.convertToCartDto(cart)).thenReturn(cartDto);
+        when(cartFormMapper.convertToCartDto(cart)).thenReturn(cartForm);
 
-        String response = cartPageController.updateCart(cartDto, bindingResult, model, deletePhoneId);
+        String response = cartPageController.updateCart(cartForm, bindingResult, model);
 
         assertEquals("redirect:/cart", response);
     }
 
-
     @Test
-    void testUpdateCartWithDeletePhoneId() throws OutOfStockException {
+    void testUpdateCartWithOutOfStock() throws OutOfStockException {
         Cart cart = new Cart();
         cart.setTotalCost(BigDecimal.TEN);
         cart.setTotalQuantity(1);
@@ -96,87 +96,98 @@ public class CartPageControllerTest {
         Phone phone = new Phone();
         phone.setId(1L);
 
-        CartItemDto cartItemDto = new CartItemDto(1L, 1);
+        CartItemForm cartItemForm = new CartItemForm(1L, 1);
         CartItem cartItem = new CartItem(phone, 1);
 
         Model model = new ExtendedModelMap();
-        CartDto cartDto = new CartDto();
+        CartForm cartForm = new CartForm();
         List<CartItem> cartItems = new ArrayList<>();
-        List<CartItemDto> cartDtoItems = new ArrayList<>();
+        List<CartItemForm> cartDtoItems = new ArrayList<>();
 
         cartItems.add(cartItem);
-        cartDtoItems.add(cartItemDto);
+        cartDtoItems.add(cartItemForm);
 
         cart.setCartItems(cartItems);
-        cartDto.setItems(cartDtoItems);
-        Long deletePhoneId = 1L;
+        cartForm.setItems(cartDtoItems);
+
+        OutOfStockException e = new OutOfStockException(1L, 5);
+        BindingResult newBindingResult = new BeanPropertyBindingResult(cartForm, WebConstants.CART_FORM_ATTR);
+            newBindingResult.rejectValue("items[" + 0 + "].quantity",
+                    WebConstants.OUT_OF_STOCK_ATTR,
+                    String.format(WebConstants.ERROR_OUT_OF_STOCK_MESSAGE, e.getStock()));
 
         when(cartService.getCart()).thenReturn(cart);
+        when(cartFormMapper.convertToCartDto(cart)).thenReturn(cartForm);
+        when(cartFormMapper.convertToCartItems(cartForm)).thenReturn(cartItems);
+        when(bindingResult.hasErrors()).thenReturn(false);
+        doThrow(e).when(cartService).update(cartItems);
 
-        String response = cartPageController.updateCart(cartDto, bindingResult, model, deletePhoneId);
+        String response = cartPageController.updateCart(cartForm, bindingResult, model);
+
+        assertEquals(BigDecimal.TEN, model.getAttribute(WebConstants.CART_COST_ATTR));
+        assertEquals(1, model.getAttribute(WebConstants.CART_QUANTITY_ATTR));
+        assertEquals(cart, model.getAttribute(WebConstants.CART_ATTR));
+        assertEquals(cartForm, model.getAttribute(WebConstants.CART_FORM_ATTR));
+        assertEquals(model.getAttribute(BindingResult.MODEL_KEY_PREFIX + WebConstants.CART_FORM_ATTR),
+                newBindingResult);
+        assertEquals("cart", response);
+    }
+
+
+    @Test
+    void testDeleteCart() {
+        Model model = new ExtendedModelMap();
+
+        Long deletePhoneId = 1L;
+
+        doNothing().when(cartService).remove(deletePhoneId);
+
+        String response = cartPageController.deleteCart(deletePhoneId, model);
+        verify(cartService).remove(deletePhoneId);
 
         assertEquals("redirect:/cart", response);
     }
 
     @Test
-    void testUpdateCartWithDeletePhoneIdException() throws OutOfStockException {
+    void testDeleteCartWithException() {
         Cart cart = new Cart();
         cart.setTotalCost(BigDecimal.TEN);
         cart.setTotalQuantity(1);
 
-        Phone phone = new Phone();
-        phone.setId(1L);
-
-        CartItemDto cartItemDto = new CartItemDto(1L, 1);
-        CartItem cartItem = new CartItem(phone, 1);
-
         Model model = new ExtendedModelMap();
-        CartDto cartDto = new CartDto();
-        List<CartItem> cartItems = new ArrayList<>();
-        List<CartItemDto> cartDtoItems = new ArrayList<>();
-
-        cartItems.add(cartItem);
-        cartDtoItems.add(cartItemDto);
-
-        cart.setCartItems(cartItems);
-        cartDto.setItems(cartDtoItems);
         Long deletePhoneId = 1L;
 
         when(cartService.getCart()).thenReturn(cart);
         doThrow(ItemNotExistException.class).when(cartService).remove(deletePhoneId);
 
-        String response = cartPageController.updateCart(cartDto, bindingResult, model, deletePhoneId);
+        String response = cartPageController.deleteCart(deletePhoneId, model);
 
+        verify(cartService).remove(deletePhoneId);
+        assertEquals(model.getAttribute(WebConstants.ERROR_MESSAGE), WebConstants.ERROR_NO_PHONE_WITH_ID_MESSAGE);
 
-        verify(cartService, times(2)).getCart();
-        assertEquals(BigDecimal.TEN, model.getAttribute(WebConstants.CART_COST_ATTR));
-        assertEquals(1, model.getAttribute(WebConstants.CART_QUANTITY_ATTR));
-        assertEquals(cart, model.getAttribute(WebConstants.CART_ATTR));
-        assertEquals(cartDto, model.getAttribute(WebConstants.CART_DTO_ATTR));
         assertEquals("cart", response);
     }
 
 
     @Test
-    void testUpdateCartWithBindingResult() throws OutOfStockException {
+    void testUpdateCartWithBindingResult() {
         Cart cart = new Cart();
         cart.setTotalCost(BigDecimal.TEN);
         cart.setTotalQuantity(1);
         Model model = new ExtendedModelMap();
-        CartDto cartDto = new CartDto();
-        Long deletePhoneId = 1L;
+        CartForm cartForm = new CartForm();
 
         when(cartService.getCart()).thenReturn(cart);
-        when(cartDtoMapper.convertToCartDto(cart)).thenReturn(cartDto);
+        when(cartFormMapper.convertToCartDto(cart)).thenReturn(cartForm);
         when(bindingResult.hasErrors()).thenReturn(true);
 
-        String response = cartPageController.updateCart(cartDto, bindingResult, model, deletePhoneId);
+        String response = cartPageController.updateCart(cartForm, bindingResult, model);
 
         verify(cartService).getCart();
         assertEquals(BigDecimal.TEN, model.getAttribute(WebConstants.CART_COST_ATTR));
         assertEquals(1, model.getAttribute(WebConstants.CART_QUANTITY_ATTR));
         assertEquals(cart, model.getAttribute(WebConstants.CART_ATTR));
-        assertEquals(cartDto, model.getAttribute(WebConstants.CART_DTO_ATTR));
+        assertEquals(cartForm, model.getAttribute(WebConstants.CART_FORM_ATTR));
         assertEquals("cart", response);
     }
 
@@ -189,30 +200,29 @@ public class CartPageControllerTest {
         Phone phone = new Phone();
         phone.setId(1L);
 
-        CartItemDto cartItemDto = new CartItemDto(1L, 1);
+        CartItemForm cartItemForm = new CartItemForm(1L, 1);
         CartItem cartItem = new CartItem(phone, 1);
 
         Model model = new ExtendedModelMap();
-        CartDto cartDto = new CartDto();
+        CartForm cartForm = new CartForm();
         List<CartItem> cartItems = new ArrayList<>();
-        List<CartItemDto> cartDtoItems = new ArrayList<>();
+        List<CartItemForm> cartDtoItems = new ArrayList<>();
 
         cartItems.add(cartItem);
-        cartDtoItems.add(cartItemDto);
+        cartDtoItems.add(cartItemForm);
 
         cart.setCartItems(cartItems);
-        cartDto.setItems(cartDtoItems);
-        Long deletePhoneId = null;
+        cartForm.setItems(cartDtoItems);
 
         when(cartService.getCart()).thenReturn(cart);
-        when(cartDtoMapper.convertToCartDto(cart)).thenReturn(cartDto);
-        when(cartDtoMapper.convertToCartItems(cartDto)).thenReturn(cartItems);
+        when(cartFormMapper.convertToCartDto(cart)).thenReturn(cartForm);
+        when(cartFormMapper.convertToCartItems(cartForm)).thenReturn(cartItems);
         when(bindingResult.hasErrors()).thenReturn(false);
 
-        String response = cartPageController.updateCart(cartDto, bindingResult, model, deletePhoneId);
+        String response = cartPageController.updateCart(cartForm, bindingResult, model);
 
         verify(cartService).getCart();
-        verify(cartDtoMapper).convertToCartItems(cartDto);
+        verify(cartFormMapper).convertToCartItems(cartForm);
         verify(cartService).update(cartItems);
         assertEquals("redirect:/cart", response);
     }

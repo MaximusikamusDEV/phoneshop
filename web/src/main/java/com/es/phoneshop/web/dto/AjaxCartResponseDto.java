@@ -3,10 +3,10 @@ package com.es.phoneshop.web.dto;
 import java.math.BigDecimal;
 
 public class AjaxCartResponseDto {
-    String status;
-    String message;
-    int totalQuantity;
-    BigDecimal totalCost;
+    private String status;
+    private String message;
+    private int totalQuantity;
+    private BigDecimal totalCost;
 
     public AjaxCartResponseDto() {
     }

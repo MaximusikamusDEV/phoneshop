@@ -14,6 +14,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -26,7 +27,7 @@ public class JdbcPhoneDao implements PhoneDao {
     @Resource
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     @Resource
-    JdbcColorDao jdbcColorDao;
+    private JdbcColorDao jdbcColorDao;
 
     @Override
     public Optional<Phone> get(final Long key) {
@@ -38,15 +39,15 @@ public class JdbcPhoneDao implements PhoneDao {
     @Override
     @Transactional
     public void save(final Phone phone) {
-        if (phone.getId() == null) {
+        if (phone.getId() == null)
             newPhoneIdFromDb(phone);
-        } else {
+        else {
             if (isExistingPhone(phone)) {
                 jdbcTemplate.update(DBConstants.QUERY_DELETE_PHONE_COLORS, phone.getId());
                 jdbcColorDao.savePhoneColors(phone);
-            } else {
+            } else
                 newPhoneIdFromDb(phone);
-            }
+
         }
     }
 

@@ -2,16 +2,16 @@ package com.es.phoneshop.web.dto;
 
 import java.math.BigDecimal;
 
-public class MiniCartDto {
-    int totalQuantity;
-    BigDecimal totalCost;
+public class MiniCart {
+    private int totalQuantity;
+    private BigDecimal totalCost;
 
-    public MiniCartDto(int totalQuantity, BigDecimal totalCost) {
+    public MiniCart(int totalQuantity, BigDecimal totalCost) {
         this.totalQuantity = totalQuantity;
         this.totalCost = totalCost;
     }
 
-    public MiniCartDto() {
+    public MiniCart() {
         this.totalQuantity = 0;
         this.totalCost = BigDecimal.ZERO;
     }
