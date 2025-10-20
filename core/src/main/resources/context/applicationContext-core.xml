@@ -28,5 +28,6 @@
 
     <jdbc:initialize-database enabled="${db.insertSchema}" data-source="dataSource">
         <jdbc:script location="classpath:db/schema.sql" />
+        <jdbc:script location="classpath:db/orderSchema.sql"/>
     </jdbc:initialize-database>
 </beans>

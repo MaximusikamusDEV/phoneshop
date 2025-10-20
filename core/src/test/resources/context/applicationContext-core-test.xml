@@ -32,6 +32,7 @@
 
     <jdbc:initialize-database enabled="true" data-source="dataSource">
         <jdbc:script location="classpath:db/schema-test.sql" />
+        <jdbc:script location="classpath:db/orderSchema-test.sql" />
         <jdbc:script location="classpath:db/demodata-phones-test.sql" />
     </jdbc:initialize-database>
 </beans>

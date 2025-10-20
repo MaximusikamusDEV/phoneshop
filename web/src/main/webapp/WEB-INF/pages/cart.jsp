@@ -18,7 +18,7 @@
     </a>
 
 
-    <a href="#" class="btn btn-primary">
+    <a href="" class="btn btn-primary">
         Order page
         <i class="bi bi-arrow-right"></i>
     </a>
@@ -90,7 +90,8 @@
                         </td>
 
                         <td class="text-center align-middle" style="width: 1%; height: 1%; white-space: nowrap;">
-                            <button type="button" class="btn btn-primary delete-btn" data-phone-id="${cartItem.phone.id}">
+                            <button type="button" class="btn btn-primary delete-btn"
+                                    data-phone-id="${cartItem.phone.id}">
                                 Delete
                             </button>
                         </td>
@@ -127,11 +128,11 @@
         </script>
 
         <div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 10px; margin-bottom: 10px; margin-right: 33px;">
-                <%--<form method="post" action="#" style="display: flex; justify-content: end; align-items: end;">--%>
-            <button class="btn btn-primary" type="submit">
-                Order
-            </button>
-                <%--  </form>--%>
+            <form method="get" action="/phoneshop-web/order" style="display: flex; justify-content: end; align-items: end;">
+                <button class="btn btn-primary" type="submit">
+                    Order
+                </button>
+            </form>
         </div>
 
     </c:when>

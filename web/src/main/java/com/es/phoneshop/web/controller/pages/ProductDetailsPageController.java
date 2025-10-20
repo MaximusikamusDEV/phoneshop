@@ -23,6 +23,7 @@ public class ProductDetailsPageController {
         model.addAttribute(WebConstants.CART_COST_ATTR, cartService.getCart().getTotalCost());
         model.addAttribute(WebConstants.CART_QUANTITY_ATTR, cartService.getCart().getTotalQuantity());
         model.addAttribute(WebConstants.PHONE_ATTR, phoneService.getPhoneById(id));
+
         return "productDetails";
     }
 }

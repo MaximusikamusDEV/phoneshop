@@ -6,7 +6,7 @@ import com.es.core.model.phone.Phone;
 import com.es.core.model.phone.PhoneDao;
 import com.es.core.model.phone.Stock;
 import com.es.core.model.phone.StockDao;
-import com.es.core.order.OutOfStockException;
+import com.es.core.cart.exceptions.OutOfStockException;
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;

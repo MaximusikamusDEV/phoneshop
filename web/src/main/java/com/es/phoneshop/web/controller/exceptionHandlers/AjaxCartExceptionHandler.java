@@ -3,7 +3,7 @@ package com.es.phoneshop.web.controller.exceptionHandlers;
 import ch.qos.logback.classic.Logger;
 import com.es.core.cart.exceptions.CartValidationException;
 import com.es.core.model.exceptions.HighQuantityException;
-import com.es.core.order.OutOfStockException;
+import com.es.core.cart.exceptions.OutOfStockException;
 import com.es.phoneshop.web.constants.WebConstants;
 import com.es.phoneshop.web.controller.AjaxCartController;
 import com.es.phoneshop.web.dto.AjaxCartResponseDto;
