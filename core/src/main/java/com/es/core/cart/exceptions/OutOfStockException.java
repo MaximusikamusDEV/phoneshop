@@ -1,4 +1,4 @@
-package com.es.core.order;
+package com.es.core.cart.exceptions;
 
 public class OutOfStockException extends Exception {
     private Long phoneId;
@@ -7,6 +7,10 @@ public class OutOfStockException extends Exception {
     public OutOfStockException(Long phoneId, Integer stock) {
         this.phoneId = phoneId;
         this.stock = stock;
+    }
+
+    public OutOfStockException(String message) {
+        super(message);
     }
 
     public OutOfStockException(String message, Long phoneId, Integer stock) {

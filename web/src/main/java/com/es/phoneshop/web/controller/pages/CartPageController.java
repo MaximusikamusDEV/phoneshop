@@ -4,21 +4,19 @@ import com.es.core.cart.Cart;
 import com.es.core.cart.CartItem;
 import com.es.core.cart.CartService;
 import com.es.core.cart.exceptions.ItemNotExistException;
-import com.es.core.order.OutOfStockException;
+import com.es.core.cart.exceptions.OutOfStockException;
 import com.es.phoneshop.web.constants.WebConstants;
 import com.es.phoneshop.web.controller.mappers.CartFormMapper;
-import com.es.phoneshop.web.dto.CartForm;
-import com.es.phoneshop.web.dto.CartItemForm;
+import com.es.phoneshop.web.controller.forms.CartForm;
+import com.es.phoneshop.web.controller.forms.CartItemForm;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
-
 import java.util.List;
 import java.util.stream.IntStream;
-
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -35,7 +33,7 @@ public class CartPageController {
     @RequestMapping(method = RequestMethod.GET)
     public String getCart(Model model) {
         Cart cart = cartService.getCart();
-        CartForm cartForm = cartFormMapper.convertToCartDto(cart);
+        CartForm cartForm = cartFormMapper.convertToCartForm(cart);
         populateCartModel(model, cartForm);
 
         return "cart";

@@ -1,4 +1,4 @@
-package com.es.phoneshop.web.dto;
+package com.es.phoneshop.web.controller.forms;
 
 import java.math.BigDecimal;
 
