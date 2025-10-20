@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+
 import java.util.Optional;
 
 @Component
@@ -23,9 +24,8 @@ public class JdbcColorDao {
     public void savePhoneColors(Phone phone) {
         if (phone.getColors() != null) {
             phone.getColors().forEach(color -> {
-                if (color.getId() == null) {
+                if (color.getId() == null)
                     getOrCreateColorId(color);
-                }
 
                 jdbcTemplate.update(DBConstants.QUERY_INSERT_PHONE_COLOR, phone.getId(), color.getId());
             });

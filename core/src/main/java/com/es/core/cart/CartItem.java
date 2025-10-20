@@ -3,8 +3,8 @@ package com.es.core.cart;
 import com.es.core.model.phone.Phone;
 
 public class CartItem {
-    Phone phone;
-    int quantity;
+    private Phone phone;
+    private int quantity;
 
     public CartItem(Phone phone, int quantity) {
         this.phone = phone;

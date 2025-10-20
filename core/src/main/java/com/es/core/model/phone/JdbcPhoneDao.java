@@ -14,6 +14,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -26,7 +27,7 @@ public class JdbcPhoneDao implements PhoneDao {
     @Resource
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     @Resource
-    JdbcColorDao jdbcColorDao;
+    private JdbcColorDao jdbcColorDao;
 
     @Override
     public Optional<Phone> get(final Long key) {
@@ -38,15 +39,15 @@ public class JdbcPhoneDao implements PhoneDao {
     @Override
     @Transactional
     public void save(final Phone phone) {
-        if (phone.getId() == null) {
+        if (phone.getId() == null)
             newPhoneIdFromDb(phone);
-        } else {
+        else {
             if (isExistingPhone(phone)) {
-                newPhoneIdFromDb(phone);
-            } else {
                 jdbcTemplate.update(DBConstants.QUERY_DELETE_PHONE_COLORS, phone.getId());
                 jdbcColorDao.savePhoneColors(phone);
-            }
+            } else
+                newPhoneIdFromDb(phone);
+
         }
     }
 
@@ -57,8 +58,8 @@ public class JdbcPhoneDao implements PhoneDao {
 
     @SuppressWarnings("SqlSourceToSinkFlow")
     @Override
-    public List<Phone> findAllInStockSorted(Optional<String> query, int offset, int limit, String sortField, String sortOrder) {
-        List<Phone> phones = query
+    public List<Phone> findAllInStockSorted(String query, int offset, int limit, String sortField, String sortOrder) {
+        return Optional.ofNullable(query)
                 .map(q ->
                         jdbcTemplate.query(
                                 String.format(
@@ -77,13 +78,11 @@ public class JdbcPhoneDao implements PhoneDao {
                                         sortOrder),
                                 phoneSetExtractor, offset, limit)
                 );
-
-        return phones;
     }
 
     @Override
-    public int getCountPhoneInStock(Optional<String> query) {
-        Integer countResult = query
+    public int getCountPhoneInStock(String query) {
+        Integer countResult = Optional.ofNullable(query)
                 .map(q -> jdbcTemplate.queryForObject(
                         DBConstants.QUERY_COUNT_PHONES_BY_QUERY_IN_STOCK,
                         Integer.class,
@@ -117,6 +116,6 @@ public class JdbcPhoneDao implements PhoneDao {
         SqlParameterSource parameters = new BeanPropertySqlParameterSource(phone);
         int rowsUpdated = namedParameterJdbcTemplate.update(DBConstants.QUERY_UPDATE_PHONE, parameters);
 
-        return rowsUpdated == 0;
+        return rowsUpdated != 0;
     }
 }

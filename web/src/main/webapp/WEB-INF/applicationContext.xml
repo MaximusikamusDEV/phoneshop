@@ -5,4 +5,8 @@
 
     <import resource="classpath:context/applicationContext-core.xml"/>
     <import resource="classpath:context/applicationContext-demodata.xml"/>
+
+    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+        <property name="basename" value="validation"/>
+    </bean>
 </beans>

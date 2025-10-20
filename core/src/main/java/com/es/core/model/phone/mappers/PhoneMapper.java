@@ -2,7 +2,6 @@ package com.es.core.model.phone.mappers;
 
 import com.es.core.model.phone.Phone;
 import org.springframework.stereotype.Component;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
