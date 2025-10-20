@@ -10,8 +10,6 @@ import com.es.core.model.phone.Stock;
 import com.es.core.order.OutOfStockException;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
