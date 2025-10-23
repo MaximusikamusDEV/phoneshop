@@ -7,7 +7,7 @@ import com.es.core.model.phone.JdbcPhoneDao;
 import com.es.core.model.phone.JdbcStockDao;
 import com.es.core.model.phone.Phone;
 import com.es.core.model.phone.Stock;
-import com.es.core.order.OutOfStockException;
+import com.es.core.cart.exceptions.OutOfStockException;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
@@ -29,6 +29,7 @@ public class HttpSessionCartService implements CartService {
     @Override
     public Cart getCart() {
         lock.readLock().lock();
+
         try {
             return cart;
         } finally {
@@ -39,6 +40,7 @@ public class HttpSessionCartService implements CartService {
     @Override
     public void addPhone(Long phoneId, int quantity) throws ItemNotExistException, OutOfStockException {
         lock.writeLock().lock();
+
         try {
             CartItem cartItem = cart.getCartItems().stream()
                     .filter(item -> item.getPhone().getId().equals(phoneId))

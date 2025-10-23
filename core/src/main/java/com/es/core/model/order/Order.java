@@ -1,11 +1,14 @@
 package com.es.core.model.order;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class Order
 {
     private Long id;
+    private String secureId;
     private List<OrderItem> orderItems;
     /**
      *  A sum of order item prices;
@@ -21,8 +24,50 @@ public class Order
     private String lastName;
     private String deliveryAddress;
     private String contactPhoneNo;
+    private String additionalInfo;
+    private LocalDateTime createdAt;
 
     private OrderStatus status;
+
+    public String getSecureId() {
+        return secureId;
+    }
+
+    public void setSecureId(String secureId) {
+        this.secureId = secureId;
+    }
+
+    public String getStatusAsString(){
+        return status.name();
+    }
+
+    public void setStatusAsString(String status){
+        this.status = OrderStatus.valueOf(status);
+    }
+
+    public Timestamp getCreatedAtAsTimestamp(){
+        return Timestamp.valueOf(createdAt);
+    }
+
+    public void setCreatedAtAsTimestamp(Timestamp createdAt){
+        this.createdAt = createdAt.toLocalDateTime();
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getAdditionalInfo() {
+        return additionalInfo;
+    }
+
+    public void setAdditionalInfo(String additionalInfo) {
+        this.additionalInfo = additionalInfo;
+    }
 
     public Long getId() {
         return id;

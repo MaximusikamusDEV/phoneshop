@@ -14,7 +14,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -47,7 +46,6 @@ public class JdbcPhoneDao implements PhoneDao {
                 jdbcColorDao.savePhoneColors(phone);
             } else
                 newPhoneIdFromDb(phone);
-
         }
     }
 

@@ -5,6 +5,8 @@ import com.es.core.cart.exceptions.ItemNotExistException;
 import com.es.core.model.exceptions.DatabaseException;
 import com.es.core.model.exceptions.DatabaseUpdateException;
 import com.es.phoneshop.web.constants.WebConstants;
+import com.es.phoneshop.web.exceptions.EmptyCartException;
+import com.es.phoneshop.web.exceptions.InvalidOrderIdException;
 import com.es.phoneshop.web.exceptions.InvalidPageNumberException;
 import org.slf4j.LoggerFactory;
 import org.springframework.ui.Model;
@@ -15,7 +17,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class GlobalExceptionHandler {
     private static final Logger logger = (Logger) LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler({InvalidPageNumberException.class, ItemNotExistException.class})
+    @ExceptionHandler({InvalidPageNumberException.class,
+            ItemNotExistException.class,
+            EmptyCartException.class,
+            InvalidOrderIdException.class})
     public String handleInvalidPageNumber(Exception e, Model model) {
         handleError(
                 e.getMessage(),

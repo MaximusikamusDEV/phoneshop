@@ -13,7 +13,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-
 import java.util.List;
 
 @Controller
@@ -33,6 +32,7 @@ public class ProductListPageController {
             Model model) {
         String validatedQuery = validateQuery(query);
         int totalPages = phoneService.getTotalPageQuantity(validatedQuery);
+
         validatePage(page, totalPages);
         List<Phone> phones = phoneService.getAllPhones(
                 page,
@@ -59,7 +59,6 @@ public class ProductListPageController {
     private String validateQuery(String query) {
         if (query != null && !query.isEmpty())
             return "%" + query.toLowerCase() + "%";
-
 
         return query;
     }

@@ -1,4 +1,4 @@
-package com.es.phoneshop.web.dto;
+package com.es.phoneshop.web.controller.forms;
 
 import jakarta.validation.Valid;
 import java.util.List;

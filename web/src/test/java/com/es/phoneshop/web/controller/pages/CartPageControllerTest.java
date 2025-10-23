@@ -5,11 +5,11 @@ import com.es.core.cart.CartItem;
 import com.es.core.cart.CartService;
 import com.es.core.cart.exceptions.ItemNotExistException;
 import com.es.core.model.phone.Phone;
-import com.es.core.order.OutOfStockException;
+import com.es.core.cart.exceptions.OutOfStockException;
 import com.es.phoneshop.web.constants.WebConstants;
 import com.es.phoneshop.web.controller.mappers.CartFormMapper;
-import com.es.phoneshop.web.dto.CartForm;
-import com.es.phoneshop.web.dto.CartItemForm;
+import com.es.phoneshop.web.controller.forms.CartForm;
+import com.es.phoneshop.web.controller.forms.CartItemForm;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,7 +40,7 @@ public class CartPageControllerTest {
     @Mock
     private CartFormMapper cartFormMapper;
     @Mock
-    BindingResult bindingResult;
+    private BindingResult bindingResult;
     @InjectMocks
     private CartPageController cartPageController;
 
@@ -58,7 +58,7 @@ public class CartPageControllerTest {
         CartForm cartForm = new CartForm();
 
         when(cartService.getCart()).thenReturn(cart);
-        when(cartFormMapper.convertToCartDto(cart)).thenReturn(cartForm);
+        when(cartFormMapper.convertToCartForm(cart)).thenReturn(cartForm);
 
         String response = cartPageController.getCart(model);
 
@@ -80,7 +80,7 @@ public class CartPageControllerTest {
         CartForm cartForm = new CartForm();
 
         when(cartService.getCart()).thenReturn(cart);
-        when(cartFormMapper.convertToCartDto(cart)).thenReturn(cartForm);
+        when(cartFormMapper.convertToCartForm(cart)).thenReturn(cartForm);
 
         String response = cartPageController.updateCart(cartForm, bindingResult, model);
 
@@ -117,7 +117,7 @@ public class CartPageControllerTest {
                     String.format(WebConstants.ERROR_OUT_OF_STOCK_MESSAGE, e.getStock()));
 
         when(cartService.getCart()).thenReturn(cart);
-        when(cartFormMapper.convertToCartDto(cart)).thenReturn(cartForm);
+        when(cartFormMapper.convertToCartForm(cart)).thenReturn(cartForm);
         when(cartFormMapper.convertToCartItems(cartForm)).thenReturn(cartItems);
         when(bindingResult.hasErrors()).thenReturn(false);
         doThrow(e).when(cartService).update(cartItems);
@@ -178,7 +178,7 @@ public class CartPageControllerTest {
         CartForm cartForm = new CartForm();
 
         when(cartService.getCart()).thenReturn(cart);
-        when(cartFormMapper.convertToCartDto(cart)).thenReturn(cartForm);
+        when(cartFormMapper.convertToCartForm(cart)).thenReturn(cartForm);
         when(bindingResult.hasErrors()).thenReturn(true);
 
         String response = cartPageController.updateCart(cartForm, bindingResult, model);
@@ -215,7 +215,7 @@ public class CartPageControllerTest {
         cartForm.setItems(cartDtoItems);
 
         when(cartService.getCart()).thenReturn(cart);
-        when(cartFormMapper.convertToCartDto(cart)).thenReturn(cartForm);
+        when(cartFormMapper.convertToCartForm(cart)).thenReturn(cartForm);
         when(cartFormMapper.convertToCartItems(cartForm)).thenReturn(cartItems);
         when(bindingResult.hasErrors()).thenReturn(false);
 

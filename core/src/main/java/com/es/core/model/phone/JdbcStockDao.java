@@ -7,7 +7,7 @@ import com.es.core.model.phone.mappers.StockRowMapper;
 import jakarta.annotation.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Component
@@ -25,6 +25,7 @@ public class JdbcStockDao implements StockDao {
     }
 
     @Override
+    @Transactional
     public void setStock(Stock stock) {
         int rowsUpdated = jdbcTemplate.update(
                 DBConstants.QUERY_UPDATE_STOCK,

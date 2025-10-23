@@ -1,4 +1,4 @@
-package com.es.phoneshop.web.dto;
+package com.es.phoneshop.web.controller.forms;
 import com.es.phoneshop.web.constants.WebConstants;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
