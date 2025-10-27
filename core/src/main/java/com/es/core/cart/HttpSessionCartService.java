@@ -6,8 +6,8 @@ import com.es.core.model.exceptions.HighQuantityException;
 import com.es.core.model.phone.JdbcPhoneDao;
 import com.es.core.model.phone.JdbcStockDao;
 import com.es.core.model.phone.Phone;
-import com.es.core.model.phone.Stock;
 import com.es.core.cart.exceptions.OutOfStockException;
+import com.es.core.model.phone.Stock;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
@@ -48,16 +48,9 @@ public class HttpSessionCartService implements CartService {
                     .orElse(null);
 
             if (cartItem != null) {
-                checkQuantity(quantity + cartItem.getQuantity());
-                checkStock(cartItem.getPhone(), quantity);
-                cartItem.setQuantity(cartItem.getQuantity() + quantity);
+                updateCartItem(cartItem, quantity);
             } else {
-                Phone phone = phoneDao.get(phoneId)
-                        .orElseThrow(() -> new ItemNotExistException(ExceptionConstants.PHONE_ID_NOT_FOUND));
-                checkQuantity(quantity);
-                checkStock(phone, quantity);
-                CartItem newCartItem = new CartItem(phone, quantity);
-                cart.getCartItems().add(newCartItem);
+                createCartItem(quantity, phoneId);
             }
 
             recalculateCart(cart);
@@ -71,8 +64,11 @@ public class HttpSessionCartService implements CartService {
         lock.writeLock().lock();
 
         try {
-            for (CartItem cartItem : cartItems)
-                checkStock(cartItem.getPhone(), cartItem.getQuantity());
+            cartItems.forEach(cartItem ->
+                    {
+                        checkStock(cartItem.getPhone(), cartItem.getQuantity());
+                    }
+            );
 
             cart.setCartItems(cartItems);
             recalculateCart(cart);
@@ -98,6 +94,39 @@ public class HttpSessionCartService implements CartService {
         }
     }
 
+    @Override
+    public void clearCart() {
+        cart.getCartItems().clear();
+        cart.setTotalCost(BigDecimal.ZERO);
+        cart.setTotalQuantity(0);
+    }
+
+    private void updateCartItem(CartItem cartItem, int quantity) throws OutOfStockException {
+        checkQuantity(quantity + cartItem.getQuantity());
+
+        checkStock(cartItem.getPhone(), quantity);
+
+        cartItem.setQuantity(cartItem.getQuantity() + quantity);
+    }
+
+    private void createCartItem(int quantity, Long phoneId) throws OutOfStockException {
+        Phone phone = phoneDao.get(phoneId)
+                .orElseThrow(() -> new ItemNotExistException(ExceptionConstants.PHONE_ID_NOT_FOUND));
+        checkQuantity(quantity);
+
+        checkStock(phone, quantity);
+
+        CartItem newCartItem = new CartItem(phone, quantity);
+        cart.getCartItems().add(newCartItem);
+    }
+
+    private void checkStock(Phone phone, int quantity) throws OutOfStockException {
+        Stock stock = stockDao.getStock(phone);
+        if (quantity > stock.getStock()) {
+            throw new OutOfStockException(phone.getId(), stock.getStock());
+        }
+    }
+
     private void recalculateCart(Cart cart) {
         List<CartItem> cartItems = cart.getCartItems();
         BigDecimal newTotalCost = cartItems.stream()
@@ -116,12 +145,6 @@ public class HttpSessionCartService implements CartService {
 
     private BigDecimal getPriceIfExistOrZero(CartItem cartItem) {
         return Optional.ofNullable(cartItem.getPhone().getPrice()).orElse(BigDecimal.ZERO);
-    }
-
-    private void checkStock(Phone phone, int quantity) throws OutOfStockException {
-        Stock stock = stockDao.getStock(phone);
-        if (quantity > (stock.getStock() - stock.getReserved()))
-            throw new OutOfStockException(phone.getId(), stock.getStock() - stock.getReserved());
     }
 
     private void checkQuantity(int quantity) {

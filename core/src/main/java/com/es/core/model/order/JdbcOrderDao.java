@@ -5,6 +5,7 @@ import com.es.core.model.constants.ExceptionConstants;
 import com.es.core.model.exceptions.DatabaseUpdateException;
 import com.es.core.model.order.resultSetExtractors.OrderSetExtractor;
 import jakarta.annotation.Resource;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -31,7 +32,7 @@ public class JdbcOrderDao implements OrderDao {
     public Optional<Order> getBySecureId(String secureId) {
         List<Order> orders = jdbcTemplate.query(DBConstants.QUERY_GET_ORDER_BY_SECURE_ID, orderSetExtractor, secureId);
 
-        return orders.stream().findFirst();
+        return CollectionUtils.emptyIfNull(orders).stream().findFirst();
     }
 
     @Override
@@ -43,8 +44,9 @@ public class JdbcOrderDao implements OrderDao {
             if (isExistingOrder(order)) {
                 jdbcTemplate.update(DBConstants.QUERY_DELETE_ORDER_ITEMS, order.getId());
                 orderItemsDao.saveOrderItems(order);
-            } else
+            } else {
                 saveOrderWithNewId(order);
+            }
         }
     }
 

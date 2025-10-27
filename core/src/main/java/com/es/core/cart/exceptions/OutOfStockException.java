@@ -1,6 +1,6 @@
 package com.es.core.cart.exceptions;
 
-public class OutOfStockException extends Exception {
+public class OutOfStockException extends RuntimeException {
     private Long phoneId;
     private Integer stock;
 
@@ -16,6 +16,11 @@ public class OutOfStockException extends Exception {
     public OutOfStockException(String message, Long phoneId, Integer stock) {
         super(message);
         this.phoneId = phoneId;
+        this.stock = stock;
+    }
+
+    public OutOfStockException(String message, Integer stock) {
+        super(message);
         this.stock = stock;
     }
 

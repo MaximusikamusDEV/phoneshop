@@ -18,4 +18,6 @@ public interface CartService {
     void update(List<CartItem> cartItems) throws OutOfStockException;
 
     void remove(Long phoneId) throws ItemNotExistException;
+
+    void clearCart();
 }

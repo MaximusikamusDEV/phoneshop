@@ -9,10 +9,8 @@ import com.es.core.model.order.OrderItem;
 import com.es.core.model.phone.Phone;
 import com.es.core.order.OrderService;
 import com.es.phoneshop.web.constants.WebConstants;
-import com.es.phoneshop.web.controller.facades.OrderFacade;
 import com.es.phoneshop.web.controller.forms.OrderForm;
 import com.es.phoneshop.web.exceptions.EmptyCartException;
-import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,10 +42,6 @@ public class OrderPageControllerTest {
     private OrderService orderService;
     @Mock
     private BindingResult bindingResult;
-    @Mock
-    private HttpSession session;
-    @Mock
-    private OrderFacade orderFacade;
     @InjectMocks
     private OrderPageController orderPageController;
 
@@ -70,10 +64,9 @@ public class OrderPageControllerTest {
         when(cartService.getCart()).thenReturn(cart);
         when(orderService.createOrder(cart)).thenReturn(order);
 
-        String response = orderPageController.getOrder(model, session);
+        String response = orderPageController.getOrder(model);
 
         verify(cartService, times(3)).getCart();
-        verify(session).setAttribute(WebConstants.ORDER_ATTR, order);
         assertEquals(order, model.getAttribute(WebConstants.ORDER_ATTR));
         assertEquals(BigDecimal.TEN, model.getAttribute(WebConstants.CART_COST_ATTR));
         assertEquals(1, model.getAttribute(WebConstants.CART_QUANTITY_ATTR));
@@ -89,23 +82,35 @@ public class OrderPageControllerTest {
 
         when(cartService.getCart()).thenReturn(cart);
 
-        assertThrows(EmptyCartException.class, () -> orderPageController.getOrder(model, session));
+        assertThrows(EmptyCartException.class, () -> orderPageController.getOrder(model));
 
         List<CartItem> cartItems = new ArrayList<>();
         cart.setCartItems(cartItems);
 
-        assertThrows(EmptyCartException.class, () -> orderPageController.getOrder(model, session));
+        assertThrows(EmptyCartException.class, () -> orderPageController.getOrder(model));
     }
 
     @Test
     void testPlaceOrderNullOrder(){
         Model model = new ExtendedModelMap();
-        Order order = null;
+        Order order = new Order();
+        Cart cart = new Cart();
         OrderForm orderForm = new OrderForm();
 
-        when(session.getAttribute(WebConstants.ORDER_ATTR)).thenReturn(order);
+        when(cartService.getCart()).thenReturn(cart);
+        when(orderService.createOrder(cart)).thenReturn(order);
 
-        String response = orderPageController.placeOrder(orderForm, bindingResult, model, session);
+        String response = orderPageController.placeOrder(orderForm, bindingResult, model);
+
+        assertEquals("redirect:/order", response);
+    }
+
+    @Test
+    void testPlaceOrderNullOrderForm(){
+        Model model = new ExtendedModelMap();
+        OrderForm orderForm = null;
+
+        String response = orderPageController.placeOrder(orderForm, bindingResult, model);
 
         assertEquals("redirect:/order", response);
     }
@@ -120,15 +125,25 @@ public class OrderPageControllerTest {
         cart.setTotalQuantity(1);
         Model model = new ExtendedModelMap();
         Order order = new Order();
+        List<OrderItem> orderItems = new ArrayList<>();
+        OrderItem orderItem = new OrderItem();
+        orderItems.add(orderItem);
+        order.setOrderItems(orderItems);
         OrderForm orderForm = new OrderForm();
+        orderForm.setLastName("John");
+        orderForm.setFirstName("Jane");
+        orderForm.setAdditionalInfo("info");
+        orderForm.setDeliveryAddress("address");
+        orderForm.setContactPhoneNo("phoneNo");
+        order.setSecureId("secureId");
 
+        when(orderService.createOrder(cart)).thenReturn(order);
         when(cartService.getCart()).thenReturn(cart);
-        when(session.getAttribute(WebConstants.ORDER_ATTR)).thenReturn(order);
         when(bindingResult.hasErrors()).thenReturn(true);
 
-        String response = orderPageController.placeOrder(orderForm, bindingResult, model, session);
+        String response = orderPageController.placeOrder(orderForm, bindingResult, model);
 
-        verify(cartService, times(2)).getCart();
+        verify(cartService, times(3)).getCart();
         assertEquals(order, model.getAttribute(WebConstants.ORDER_ATTR));
         assertEquals(BigDecimal.TEN, model.getAttribute(WebConstants.CART_COST_ATTR));
         assertEquals(1, model.getAttribute(WebConstants.CART_QUANTITY_ATTR));
@@ -138,13 +153,15 @@ public class OrderPageControllerTest {
     @Test
     void testPlaceOrderWithEmptyOrderItems(){
         Model model = new ExtendedModelMap();
-        Order order = new Order();
         OrderForm orderForm = new OrderForm();
+        Order order = new Order();
+        Cart cart = new Cart();
 
-        when(session.getAttribute(WebConstants.ORDER_ATTR)).thenReturn(order);
+        when(cartService.getCart()).thenReturn(cart);
+        when(orderService.createOrder(cart)).thenReturn(order);
         when(bindingResult.hasErrors()).thenReturn(false);
 
-        String response = orderPageController.placeOrder(orderForm, bindingResult, model, session);
+        String response = orderPageController.placeOrder(orderForm, bindingResult, model);
 
         assertEquals("redirect:/order", response);
     }
@@ -170,16 +187,15 @@ public class OrderPageControllerTest {
         orderForm.setDeliveryAddress("address");
         orderForm.setContactPhoneNo("phoneNo");
 
+        when(orderService.createOrder(cart)).thenReturn(order);
         when(cartService.getCart()).thenReturn(cart);
-        when(session.getAttribute(WebConstants.ORDER_ATTR)).thenReturn(order);
         when(bindingResult.hasErrors()).thenReturn(false);
-        doThrow(OutOfStockException.class).when(orderFacade).placeOrder(order);
+        doThrow(OutOfStockException.class).when(orderService).placeOrder(order);
         when(orderService.createOrder(cart)).thenReturn(order);
 
-        String response = orderPageController.placeOrder(orderForm, bindingResult, model, session);
+        String response = orderPageController.placeOrder(orderForm, bindingResult, model);
 
-        verify(cartService, times(3)).getCart();
-        verify(session).setAttribute(WebConstants.ORDER_ATTR, order);
+        verify(cartService, times(4)).getCart();
         assertEquals(order.getFirstName(), orderForm.getFirstName());
         assertEquals(order.getLastName(), orderForm.getLastName());
         assertEquals(order.getAdditionalInfo(), orderForm.getAdditionalInfo());
@@ -214,20 +230,18 @@ public class OrderPageControllerTest {
         order.setSecureId("secureId");
 
         when(cartService.getCart()).thenReturn(cart);
-        when(session.getAttribute(WebConstants.ORDER_ATTR)).thenReturn(order);
         when(bindingResult.hasErrors()).thenReturn(false);
-        doNothing().when(orderFacade).placeOrder(order);
+        doNothing().when(orderService).placeOrder(order);
         when(orderService.createOrder(cart)).thenReturn(order);
 
 
-        String response = orderPageController.placeOrder(orderForm, bindingResult, model, session);
+        String response = orderPageController.placeOrder(orderForm, bindingResult, model);
 
-        verify(session).removeAttribute(WebConstants.ORDER_ATTR);
         assertEquals(order.getFirstName(), orderForm.getFirstName());
         assertEquals(order.getLastName(), orderForm.getLastName());
         assertEquals(order.getAdditionalInfo(), orderForm.getAdditionalInfo());
         assertEquals(order.getDeliveryAddress(), orderForm.getDeliveryAddress());
         assertEquals(order.getContactPhoneNo(), orderForm.getContactPhoneNo());
-        assertEquals("redirect:/orderOverview?orderId=secureId", response);
+        assertEquals("redirect:/orderOverview/secureId", response);
     }
 }

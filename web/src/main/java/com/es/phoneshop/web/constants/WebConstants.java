@@ -35,4 +35,5 @@ public class WebConstants {
     public static final String INVALID_PHONE_NUMBER = "Phone number is invalid. It must start with +375 and include 9 numbers after that";
     public static final String TOO_HIGH_ADDITIONAL_INFO = "Type less than 900 symbols";
     public static final String OUT_OF_STOCK_INFO = "Some products were out of stock. We deleted them";
+    public static final String OUT_OF_STOCK_ERROR_CODE = "outOfStock";
 }

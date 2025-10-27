@@ -69,6 +69,21 @@ public class JdbcStockDaoIntTest {
         assertEquals(5, (int) stockDao.getStock(phone).getReserved());
         assertEquals(15, (int) stockDao.getStock(phone).getStock());
         assertEquals(stockDao.getStock(phone).getPhone(), phone);
+    }
+
+    @Test
+    void testReservePhone() {
+        Phone phone = setCreatedPhone();
+        phoneDao.save(phone);
+        savePhoneStock(phone, 10, 1);
+        assertEquals(1, (int) stockDao.getStock(phone).getReserved());
+        assertEquals(10, (int) stockDao.getStock(phone).getStock());
+        assertEquals(stockDao.getStock(phone).getPhone(), phone);
+
+        stockDao.reservePhone(phone, 5);
+        assertEquals(6, (int) stockDao.getStock(phone).getReserved());
+        assertEquals(5, (int) stockDao.getStock(phone).getStock());
+        assertEquals(stockDao.getStock(phone).getPhone(), phone);
 
     }
 }

@@ -48,9 +48,9 @@ public class CartPageController {
             return "cart";
         }
 
-        if (cartForm.getItems() == null || cartService.getCart().getCartItems() == null)
+        if (cartForm.getItems() == null || cartService.getCart().getCartItems() == null) {
             return "redirect:/cart";
-
+        }
 
         List<CartItem> cartItems = cartFormMapper.convertToCartItems(cartForm);
 
@@ -96,10 +96,11 @@ public class CartPageController {
 
         BindingResult newBindingResult = new BeanPropertyBindingResult(cartForm, WebConstants.CART_FORM_ATTR);
 
-        if (itemIndex != -1)
+        if (itemIndex != -1) {
             newBindingResult.rejectValue("items[" + itemIndex + "].quantity",
                     WebConstants.OUT_OF_STOCK_ATTR,
                     String.format(WebConstants.ERROR_OUT_OF_STOCK_MESSAGE, e.getStock()));
+        }
 
         populateCartModel(model, cartForm);
         model.addAttribute(BindingResult.MODEL_KEY_PREFIX + WebConstants.CART_FORM_ATTR, newBindingResult);

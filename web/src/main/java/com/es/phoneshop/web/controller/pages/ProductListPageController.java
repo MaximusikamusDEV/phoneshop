@@ -49,16 +49,19 @@ public class ProductListPageController {
     }
 
     private void validatePage(int page, int totalPages) {
-        if (totalPages == 0)
+        if (totalPages == 0) {
             return;
+        }
 
-        if (page < 1 || page > totalPages)
+        if (page < 1 || page > totalPages) {
             throw new InvalidPageNumberException(WebConstants.ERROR_INVALID_PAGE_NUMBER_MESSAGE);
+        }
     }
 
     private String validateQuery(String query) {
-        if (query != null && !query.isEmpty())
+        if (query != null && !query.isEmpty()) {
             return "%" + query.toLowerCase() + "%";
+        }
 
         return query;
     }

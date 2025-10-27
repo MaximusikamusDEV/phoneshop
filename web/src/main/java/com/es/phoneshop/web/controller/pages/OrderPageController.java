@@ -6,11 +6,9 @@ import com.es.core.model.order.Order;
 import com.es.core.order.OrderService;
 import com.es.core.cart.exceptions.OutOfStockException;
 import com.es.phoneshop.web.constants.WebConstants;
-import com.es.phoneshop.web.controller.facades.OrderFacade;
 import com.es.phoneshop.web.controller.forms.OrderForm;
 import com.es.phoneshop.web.exceptions.EmptyCartException;
 import jakarta.annotation.Resource;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,18 +24,16 @@ public class OrderPageController {
     private OrderService orderService;
     @Resource
     private CartService cartService;
-    @Resource
-    private OrderFacade orderFacade;
 
     @RequestMapping(method = RequestMethod.GET)
-    public String getOrder(Model model, HttpSession session) {
+    public String getOrder(Model model) {
         Cart cart = cartService.getCart();
 
-        if (cart == null || cart.getCartItems() == null || cart.getCartItems().isEmpty())
+        if (cart == null || cart.getCartItems() == null || cart.getCartItems().isEmpty()) {
             throw new EmptyCartException(WebConstants.ERROR_EMPTY_CART);
+        }
 
         Order order = orderService.createOrder(cart);
-        session.setAttribute(WebConstants.ORDER_ATTR, order);
         populateOrderModel(order, model);
         model.addAttribute(WebConstants.ORDER_FORM_ATTR, new OrderForm());
         return "order";
@@ -46,36 +42,33 @@ public class OrderPageController {
     @RequestMapping(method = RequestMethod.POST)
     public String placeOrder(@Valid @ModelAttribute(WebConstants.ORDER_FORM_ATTR) OrderForm orderForm,
                              BindingResult bindingResult,
-                             Model model,
-                             HttpSession session) {
-
-        Order order = (Order) session.getAttribute(WebConstants.ORDER_ATTR);
-
-        if (order == null)
+                             Model model) {
+        if (orderForm == null) {
             return "redirect:/order";
+        }
+
+        Order order = orderService.createOrder(cartService.getCart());
+        populateOrderFormToOrder(order, orderForm);
+
+        if (order.getOrderItems() == null || order.getOrderItems().isEmpty()) {
+            return "redirect:/order";
+        }
 
         if (bindingResult.hasErrors()) {
             populateOrderModel(order, model);
             return "order";
         }
 
-        if (order.getOrderItems() == null || order.getOrderItems().isEmpty())
-            return "redirect:/order";
-
-        populateOrderFormToOrder(order, orderForm);
-
         try {
-            orderFacade.placeOrder(order);
-            session.removeAttribute(WebConstants.ORDER_ATTR);
+            orderService.placeOrder(order);
         } catch (OutOfStockException e) {
-            bindingResult.reject("outOfStock", WebConstants.OUT_OF_STOCK_INFO);
+            bindingResult.reject(WebConstants.OUT_OF_STOCK_ERROR_CODE, WebConstants.OUT_OF_STOCK_INFO);
             order = orderService.createOrder(cartService.getCart());
-            session.setAttribute(WebConstants.ORDER_ATTR, order);
             populateOrderModel(order, model);
             return "order";
         }
 
-        return "redirect:/orderOverview?orderId=" + order.getSecureId();
+        return "redirect:/orderOverview/" + order.getSecureId();
     }
 
     private void populateOrderModel(Order order, Model model) {

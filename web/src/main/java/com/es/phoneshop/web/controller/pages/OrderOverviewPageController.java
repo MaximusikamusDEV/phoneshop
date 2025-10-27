@@ -8,9 +8,9 @@ import com.es.phoneshop.web.exceptions.InvalidOrderIdException;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping(value = "/orderOverview")
@@ -20,8 +20,8 @@ public class OrderOverviewPageController {
     @Resource
     private CartService cartService;
 
-    @RequestMapping(method = RequestMethod.GET)
-    public String showOrderOverviewPage(@RequestParam String orderId, Model model) {
+    @RequestMapping(method = RequestMethod.GET, value = "/{orderId}")
+    public String showOrderOverviewPage(@PathVariable String orderId, Model model) {
         Order order = orderService.getOrderBySecureId(orderId)
                 .orElseThrow(() -> new InvalidOrderIdException(WebConstants.ERROR_INVALID_ORDER_ID));
 
