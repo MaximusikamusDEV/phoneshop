@@ -18,7 +18,7 @@
         <directory>src/main/webapp/WEB-INF/conf</directory>
         <targetPath>${project.build.outputDirectory}</targetPath>
         <includes>
-          <include>application.properties</include>
+          <include>*.properties</include>
         </includes>
       </resource>
     </resources>
@@ -96,6 +96,19 @@
     <dependency>
       <groupId>org.hibernate.validator</groupId>
       <artifactId>hibernate-validator</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
     </dependency>
 
   </dependencies>

@@ -1,12 +1,13 @@
 package com.es.core.model.phone;
 
-import org.junit.jupiter.api.BeforeAll;
+import jakarta.annotation.Resource;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Collections;
@@ -22,21 +23,22 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = "classpath:context/applicationContext-core-test.xml")
+@Transactional
 public class JdbcPhoneDaoIntTest {
-    @Autowired
+    @Resource
     private PhoneDao phoneDao;
-    private static Phone createdPhone;
-    private static Color createdColor;
+    private Phone createdPhone;
+    private Color createdColor;
 
-    @BeforeAll
-    static void setCreatedColor() {
+    @BeforeEach
+    void setCreatedColor() {
         createdColor = new Color();
         createdColor.setId(1013L);
         createdColor.setCode("TEST");
     }
 
-    @BeforeAll
-    static void setCreatedPhone() {
+    @BeforeEach
+    void setCreatedPhone() {
         createdPhone = new Phone();
         createdPhone.setBrand("ARCHOSTEST");
         createdPhone.setModel("ARCHOS 101 G9");
@@ -87,10 +89,24 @@ public class JdbcPhoneDaoIntTest {
 
     @Test
     void testSave() {
+        createdPhone.setId(1L);
         phoneDao.save(createdPhone);
         assertNotNull(createdPhone.getId());
         Optional<Phone> phoneGet = phoneDao.get(createdPhone.getId());
         assertEquals("ARCHOSTEST", phoneGet.get().getBrand());
+    }
+
+    @Test
+    void testSaveExisting() {
+        phoneDao.save(createdPhone);
+        assertNotNull(createdPhone.getId());
+        Optional<Phone> phoneGet = phoneDao.get(createdPhone.getId());
+        assertEquals("ARCHOSTEST", phoneGet.get().getBrand());
+        createdPhone.setPrice(BigDecimal.TEN);
+        phoneDao.save(createdPhone);
+        Optional<Phone> phoneGet2 = phoneDao.get(createdPhone.getId());
+        assertEquals("ARCHOSTEST", phoneGet2.get().getBrand());
+        assertTrue(phoneGet2.get().getPrice().compareTo(BigDecimal.TEN) == 0);
     }
 
     @Test
@@ -162,8 +178,8 @@ public class JdbcPhoneDaoIntTest {
 
     @Test
     void testFindPhoneByQueryCount() {
-        int amountSamsung = phoneDao.getCountPhoneInStock(Optional.ofNullable("%samsung%"));
-        int amountMeizu = phoneDao.getCountPhoneInStock(Optional.ofNullable("%meizu%"));
+        int amountSamsung = phoneDao.getCountPhoneInStock("%samsung%");
+        int amountMeizu = phoneDao.getCountPhoneInStock("%meizu%");
         assertNotEquals(amountSamsung, amountMeizu);
         assertTrue(amountSamsung > 1);
         assertTrue(amountMeizu > 1);
@@ -172,7 +188,7 @@ public class JdbcPhoneDaoIntTest {
     @Test
     void testFindPhoneByQuery() {
         String preparedQuery = "%" + "samsung" + "%";
-        List<Phone> phones = phoneDao.findAllInStockSorted(Optional.of(preparedQuery), 10, 10, "p.brand", "asc");
+        List<Phone> phones = phoneDao.findAllInStockSorted(preparedQuery, 10, 10, "p.brand", "asc");
         assertFalse(phones.isEmpty());
 
         for (Phone phone : phones) {
@@ -182,15 +198,15 @@ public class JdbcPhoneDaoIntTest {
 
     @Test
     void testGetCountPhoneInStock() {
-        int amount = phoneDao.getCountPhoneInStock(Optional.empty());
+        int amount = phoneDao.getCountPhoneInStock(null);
         assertNotEquals(0, amount);
     }
 
     @Test
     void testFindAllInStockSorted() {
-        List<Phone> phones1 = phoneDao.findAllInStockSorted(Optional.empty(), 0, 10, "p.brand", "asc");
+        List<Phone> phones1 = phoneDao.findAllInStockSorted(null, 0, 10, "p.brand", "asc");
         assertFalse(phones1.isEmpty());
-        List<Phone> phones2 = phoneDao.findAllInStockSorted(Optional.empty(), 0, 10, "p.brand", "desc");
+        List<Phone> phones2 = phoneDao.findAllInStockSorted(null, 0, 10, "p.brand", "desc");
         assertFalse(phones2.isEmpty());
         assertFalse(phones1.stream().findFirst().equals(phones2.stream().findFirst()));
     }

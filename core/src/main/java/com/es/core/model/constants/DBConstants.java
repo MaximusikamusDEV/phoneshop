@@ -91,4 +91,11 @@ public class DBConstants {
     public static final String QUERY_DELETE_PHONE_COLORS = "delete from phone2color where phoneId = ?";
     public static final String QUERY_INSERT_PHONE_COLOR = "insert into phone2color (phoneId, colorId) values (?, ?)";
     public static final String QUERY_SAVE_COLOR = "insert into colors (code) values (:code)";
+    public static final String QUERY_GET_STOCK = "select s.stock, s.reserved " +
+            "from phones p " +
+            "inner join stocks s on p.id = s.phoneId " +
+            "where s.phoneId = ?";
+    public static final String QUERY_UPDATE_STOCK = "update stocks set stock = ?, reserved = ? " +
+            "where phoneId = ?";
+    public static final String QUERY_INSERT_STOCK = "insert into stocks (phoneId, stock, reserved) values (?, ?, ?)";
 }

@@ -1,23 +1,25 @@
 package com.es.phoneshop.web.dto;
 import com.es.phoneshop.web.constants.WebConstants;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
-public class CartItemDto {
+public class CartItemForm {
 
     @NotNull(message = WebConstants.PHONE_ID_VALID_MESSAGE)
     @Min(value = 1L,
             message = WebConstants.PHONE_ID_VALID_MESSAGE)
     private Long phoneId;
 
-    @NotNull
+    @NotNull(message = WebConstants.QUANTITY_NULL_VALID_MESSAGE)
     @Min(value = 1,
-            message = WebConstants.QUANTITY_VALID_MESSAGE)
-    private int quantity;
+            message = WebConstants.QUANTITY_MIN_VALID_MESSAGE)
+    @Max(value = 5, message = WebConstants.QUANTITY_MAX_VALID_MESSAGE)
+    private Integer quantity;
 
-    public CartItemDto() {}
+    public CartItemForm() {}
 
-    public CartItemDto(Long phoneId, int quantity) {
+    public CartItemForm(Long phoneId, Integer quantity) {
         this.phoneId = phoneId;
         this.quantity = quantity;
     }
@@ -30,11 +32,11 @@ public class CartItemDto {
         this.phoneId = phoneId;
     }
 
-    public int getQuantity() {
+    public Integer getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
 }
