@@ -6,6 +6,7 @@ import com.es.core.model.exceptions.DatabaseException;
 import com.es.core.model.exceptions.DatabaseUpdateException;
 import com.es.phoneshop.web.constants.WebConstants;
 import com.es.phoneshop.web.exceptions.EmptyCartException;
+import com.es.phoneshop.web.exceptions.EmptyOrderListException;
 import com.es.phoneshop.web.exceptions.InvalidOrderIdException;
 import com.es.phoneshop.web.exceptions.InvalidPageNumberException;
 import org.slf4j.LoggerFactory;
@@ -20,7 +21,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({InvalidPageNumberException.class,
             ItemNotExistException.class,
             EmptyCartException.class,
-            InvalidOrderIdException.class})
+            InvalidOrderIdException.class,
+            EmptyOrderListException.class})
     public String handleInvalidPageNumber(Exception e, Model model) {
         handleError(
                 e.getMessage(),

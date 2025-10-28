@@ -1,5 +1,6 @@
 package com.es.core.model.order;
 
+import com.es.core.model.exceptions.DatabaseUpdateException;
 import com.es.core.model.phone.Color;
 import com.es.core.model.phone.Phone;
 import com.es.core.model.phone.PhoneDao;
@@ -17,8 +18,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.UUID;
 import java.util.Optional;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = "classpath:context/applicationContext-core-test.xml")
@@ -155,6 +158,21 @@ public class JdbcOrderDaoIntTest {
 
     @Test
     void testFindAll(){
+        Order createdOrder = createOrder(20L, UUID.randomUUID().toString().replace("-", ""));
+        orderDao.saveOrderWithItems(createdOrder);
+        createdOrder = createOrder(40L, UUID.randomUUID().toString().replace("-", ""));
+        orderDao.saveOrderWithItems(createdOrder);
+        createdOrder = createOrder(50L, UUID.randomUUID().toString().replace("-", ""));
+        orderDao.saveOrderWithItems(createdOrder);
+
+        List<Order> orders = orderDao.findAll();
+
+        assertNotNull(orders);
+        assertEquals(3, orders.size());
+    }
+
+    @Test
+    void testGetById(){
         Order createdOrder = createOrder(3L, UUID.randomUUID().toString().replace("-", ""));
         orderDao.saveOrderWithItems(createdOrder);
         createdOrder = createOrder(4L, UUID.randomUUID().toString().replace("-", ""));
@@ -162,9 +180,35 @@ public class JdbcOrderDaoIntTest {
         createdOrder = createOrder(5L, UUID.randomUUID().toString().replace("-", ""));
         orderDao.saveOrderWithItems(createdOrder);
 
-        List<Order> orders = orderDao.findAll();
+        Order order = orderDao.getById(createdOrder.getId()).get();
 
-        assertNotNull(orders);
-        assertEquals(3, orders.size());
+        assertNotNull(order);
+        assertEquals(createdOrder.getSecureId(), order.getSecureId());
+    }
+
+    @Test
+    void testUpdateOrderStatus(){
+        Order createdOrder = createOrder(3L, UUID.randomUUID().toString().replace("-", ""));
+        orderDao.saveOrderWithItems(createdOrder);
+        createdOrder = createOrder(4L, UUID.randomUUID().toString().replace("-", ""));
+        orderDao.saveOrderWithItems(createdOrder);
+        createdOrder = createOrder(5L, UUID.randomUUID().toString().replace("-", ""));
+        orderDao.saveOrderWithItems(createdOrder);
+
+        createdOrder.setStatus(OrderStatus.DELIVERED);
+        orderDao.updateOrderStatus(createdOrder);
+
+        Order order = orderDao.getById(createdOrder.getId()).get();
+
+        assertNotNull(order);
+        assertEquals(createdOrder.getSecureId(), order.getSecureId());
+        assertEquals(OrderStatus.DELIVERED, order.getStatus());
+    }
+
+    @Test
+    void testUpdateOrderStatusException(){
+        Order createdOrder = createOrder(3L, UUID.randomUUID().toString().replace("-", ""));
+        createdOrder.setStatus(OrderStatus.DELIVERED);
+        assertThrows(DatabaseUpdateException.class, () -> orderDao.updateOrderStatus(createdOrder));
     }
 }

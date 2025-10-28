@@ -106,6 +106,44 @@ public class OrderServiceImplTest {
     }
 
     @Test
+    void testGetOrderById() throws OutOfStockException {
+        Order order = new Order();
+
+        when(orderDao.getById(anyLong())).thenReturn(Optional.of(order));
+        Order getOrder = orderService.getOrderById(1L).get();
+
+        assertNotNull(getOrder);
+        assertEquals(order.getId(), getOrder.getId());
+        verify(orderDao, times(1)).getById(anyLong());
+    }
+
+    @Test
+    void testGetAllOrders() throws OutOfStockException {
+        Order order = new Order();
+        List<Order> orders = new ArrayList<>();
+        orders.add(order);
+
+        when(orderDao.findAll()).thenReturn(orders);
+        List<Order> getOrders = orderService.getAllOrders().get();
+
+        assertNotNull(getOrders);
+        assertEquals(orders, getOrders);
+        verify(orderDao, times(1)).findAll();
+    }
+
+    @Test
+    void testUpdateOrderStatus() throws OutOfStockException {
+        Order order = new Order();
+
+        doNothing().when(orderDao).updateOrderStatus(order);
+        orderService.updateOrderStatus(order, OrderStatus.DELIVERED);
+
+        assertNotNull(order);
+        assertEquals(OrderStatus.DELIVERED, order.getStatus());
+        verify(orderDao, times(1)).updateOrderStatus(order);
+    }
+
+    @Test
     void testPlaceOrderWithOutOfStock() throws OutOfStockException {
         Order order = new Order();
         Phone phone1 = new Phone();
