@@ -6,6 +6,7 @@ import com.es.core.cart.CartService;
 import com.es.core.cart.exceptions.OutOfStockException;
 import com.es.core.model.order.OrderDao;
 import com.es.core.model.phone.*;
+import com.es.core.stock.StockService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,11 +41,11 @@ public class OrderServiceImplTest {
     @Mock
     private PhoneDao phoneDao;
     @Mock
-    private StockDao stockDao;
-    @Mock
     private CartService cartService;
     @Mock
     private OrderDao orderDao;
+    @Mock
+    private StockService stockService;
     @InjectMocks
     private OrderServiceImpl orderService;
     private Phone createdPhone;
@@ -140,14 +141,14 @@ public class OrderServiceImplTest {
         stock.setStock(1);
 
         doNothing().when(cartService).update(anyList());
-        when(stockDao.getStock(phone1)).thenReturn(stock);
-        when(stockDao.getStock(phone2)).thenReturn(stock);
-        when(stockDao.getStock(phone3)).thenReturn(stock);
+        when(stockService.getStock(phone1)).thenReturn(stock);
+        when(stockService.getStock(phone2)).thenReturn(stock);
+        when(stockService.getStock(phone3)).thenReturn(stock);
 
         assertThrows(OutOfStockException.class, () -> orderService.placeOrder(order));
 
         verify(cartService).update(anyList());
-        verify(stockDao, never()).reservePhone(any(), anyInt());
+        verify(stockService, never()).reservePhone(any(), anyInt());
         verify(orderDao, never()).saveOrderWithItems(any());
     }
 
@@ -190,16 +191,16 @@ public class OrderServiceImplTest {
         stock.setReserved(10);
         stock.setStock(1000);
 
-        when(stockDao.getStock(phone1)).thenReturn(stock);
-        when(stockDao.getStock(phone2)).thenReturn(stock);
-        when(stockDao.getStock(phone3)).thenReturn(stock);
+        when(stockService.getStock(phone1)).thenReturn(stock);
+        when(stockService.getStock(phone2)).thenReturn(stock);
+        when(stockService.getStock(phone3)).thenReturn(stock);
         doNothing().when(cartService).clearCart();
         doNothing().when(orderDao).saveOrderWithItems(order);
-        doNothing().when(stockDao).reservePhone(any(), anyInt());
+        doNothing().when(stockService).reservePhone(any(), anyInt());
 
         orderService.placeOrder(order);
 
-        verify(stockDao, times(3)).reservePhone(any(), anyInt());
+        verify(stockService, times(3)).reservePhone(any(), anyInt());
         verify(orderDao).saveOrderWithItems(order);
         verify(cartService).clearCart();
     }

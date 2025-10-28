@@ -7,7 +7,6 @@ import com.es.core.model.phone.mappers.StockRowMapper;
 import jakarta.annotation.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-
 import java.util.Optional;
 
 @Component
@@ -39,14 +38,5 @@ public class JdbcStockDao implements StockDao {
                     stock.getStock(),
                     stock.getReserved());
         }
-    }
-
-    @Override
-    public void reservePhone(Phone phone, int quantity) {
-        Stock stock = getStock(phone);
-        stock.setReserved(stock.getReserved() + quantity);
-        stock.setStock(stock.getStock() - quantity);
-
-        setStock(stock);
     }
 }

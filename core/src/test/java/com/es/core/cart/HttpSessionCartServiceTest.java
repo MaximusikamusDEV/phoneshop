@@ -5,8 +5,8 @@ import com.es.core.model.exceptions.HighQuantityException;
 import com.es.core.model.phone.Phone;
 import com.es.core.model.phone.PhoneDao;
 import com.es.core.model.phone.Stock;
-import com.es.core.model.phone.StockDao;
 import com.es.core.cart.exceptions.OutOfStockException;
+import com.es.core.stock.StockService;
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
@@ -40,7 +40,7 @@ public class HttpSessionCartServiceTest {
     @Resource
     private Cart cart;
     @Resource
-    private StockDao stockDao;
+    private StockService stockService;
     private Phone createdPhone;
 
     @BeforeEach
@@ -95,7 +95,7 @@ public class HttpSessionCartServiceTest {
         phoneStock.setStock(stock);
         phoneStock.setReserved(reserved);
         phoneStock.setPhone(phone);
-        stockDao.setStock(phoneStock);
+        stockService.setStock(phoneStock);
     }
 
     @Test

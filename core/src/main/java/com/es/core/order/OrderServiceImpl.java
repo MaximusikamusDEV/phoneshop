@@ -11,7 +11,7 @@ import com.es.core.model.order.OrderItem;
 import com.es.core.model.order.OrderStatus;
 import com.es.core.model.phone.Phone;
 import com.es.core.model.phone.Stock;
-import com.es.core.model.phone.StockDao;
+import com.es.core.stock.StockService;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -26,13 +26,13 @@ import java.util.UUID;
 @Service
 public class OrderServiceImpl implements OrderService {
     @Resource
+    private StockService stockService;
+    @Resource
+    private CartService cartService;
+    @Resource
     private OrderDao orderDao;
     @Value("${delivery.price}")
     private BigDecimal deliveryPrice;
-    @Resource
-    private StockDao stockDao;
-    @Resource
-    private CartService cartService;
 
     @Override
     public Order createOrder(Cart cart) {
@@ -87,7 +87,7 @@ public class OrderServiceImpl implements OrderService {
         order.setOrderItems(availableItems);
 
         order.getOrderItems().forEach(item -> {
-            stockDao.reservePhone(item.getPhone(), item.getQuantity());
+            stockService.reservePhone(item.getPhone(), item.getQuantity());
         });
 
         orderDao.saveOrderWithItems(order);
@@ -108,7 +108,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private boolean isPhoneInStock(Phone phone, int quantity) throws OutOfStockException {
-        Stock stock = stockDao.getStock(phone);
+        Stock stock = stockService.getStock(phone);
         return quantity <= stock.getStock();
     }
 }
