@@ -7,4 +7,5 @@ public class ExceptionConstants {
     public static final String PHONE_ID_NOT_FOUND = "Phone id not found";
     public static final String PHONE_ID_NOT_FOUND_IN_CART = "Phone id not found in cart";
     public static final String QUANTITY_HIGHER_THAN_FIVE = "Quantity of product can't be higher than 5";
+    public static final String OUT_OF_STOCK_INFO = "Some products were out of stock. We deleted them";
 }

@@ -1,7 +1,7 @@
 package com.es.core.cart;
 
 import com.es.core.cart.exceptions.ItemNotExistException;
-import com.es.core.order.OutOfStockException;
+import com.es.core.cart.exceptions.OutOfStockException;
 import java.util.List;
 
 public interface CartService {
@@ -18,4 +18,6 @@ public interface CartService {
     void update(List<CartItem> cartItems) throws OutOfStockException;
 
     void remove(Long phoneId) throws ItemNotExistException;
+
+    void clearCart();
 }

@@ -6,7 +6,15 @@ public class OrderItem {
     private Long id;
     private Phone phone;
     private Order order;
-    private Long quantity;
+    private int quantity;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public Phone getPhone() {
         return phone;
@@ -24,11 +32,11 @@ public class OrderItem {
         this.order = order;
     }
 
-    public Long getQuantity() {
+    public int getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(final Long quantity) {
+    public void setQuantity(final int quantity) {
         this.quantity = quantity;
     }
 }

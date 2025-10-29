@@ -5,8 +5,8 @@ import com.es.core.model.exceptions.HighQuantityException;
 import com.es.core.model.phone.Phone;
 import com.es.core.model.phone.PhoneDao;
 import com.es.core.model.phone.Stock;
-import com.es.core.model.phone.StockDao;
-import com.es.core.order.OutOfStockException;
+import com.es.core.cart.exceptions.OutOfStockException;
+import com.es.core.stock.StockService;
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
@@ -40,13 +40,12 @@ public class HttpSessionCartServiceTest {
     @Resource
     private Cart cart;
     @Resource
-    private StockDao stockDao;
-    private MockHttpSession session;
+    private StockService stockService;
     private Phone createdPhone;
 
     @BeforeEach
     void setUp() {
-        session = new MockHttpSession();
+        MockHttpSession session = new MockHttpSession();
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setSession(session);
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
@@ -96,7 +95,7 @@ public class HttpSessionCartServiceTest {
         phoneStock.setStock(stock);
         phoneStock.setReserved(reserved);
         phoneStock.setPhone(phone);
-        stockDao.setStock(phoneStock);
+        stockService.setStock(phoneStock);
     }
 
     @Test
@@ -268,5 +267,24 @@ public class HttpSessionCartServiceTest {
         newCart.setCartItems(newCartItems);
 
         assertThrows(OutOfStockException.class, () -> httpSessionCartService.addPhone(phoneId, 5));
+    }
+
+    @Test
+    void testClearCart() {
+        createdPhone.setId(1L);
+        savePhoneWithStock(createdPhone, 100, 0);
+
+        httpSessionCartService.addPhone(createdPhone.getId(), 1);
+        Cart cart = httpSessionCartService.getCart();
+        assertNotNull(cart);
+        assertEquals(1, cart.getCartItems().get(0).getQuantity());
+
+        httpSessionCartService.clearCart();
+
+        cart = httpSessionCartService.getCart();
+
+        assertEquals(0, cart.getCartItems().size());
+        assertEquals(BigDecimal.ZERO, cart.getTotalCost());
+        assertEquals(0, cart.getTotalQuantity());
     }
 }

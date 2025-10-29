@@ -98,4 +98,54 @@ public class DBConstants {
     public static final String QUERY_UPDATE_STOCK = "update stocks set stock = ?, reserved = ? " +
             "where phoneId = ?";
     public static final String QUERY_INSERT_STOCK = "insert into stocks (phoneId, stock, reserved) values (?, ?, ?)";
+    public static final String QUERY_GET_ORDER_BY_SECURE_ID = "select " +
+            "o.secureId, o.id, o.firstName, o.lastName, o.deliveryAddress, o.contactPhoneNo, " +
+            "o.additionalInfo, o.status, o.createdAt, o.subtotal, o.deliveryPrice, " +
+            "o.totalPrice, " +
+            "item.orderId as orderId, item.phoneId as phoneId, item.id as itemId, " +
+            "item.quantity, " +
+            "p.id, p.brand, p.model, p.price, p.displaySizeInches, p.weightGr, " +
+            "p.lengthMm, p.widthMm, p.heightMm, p.announced, p.deviceType, p.os, " +
+            "p.displayResolution, p.pixelDensity, p.displayTechnology, " +
+            "p.backCameraMegapixels, p.frontCameraMegapixels, p.ramGb, " +
+            "p.internalStorageGb, p.batteryCapacityMah, p.talkTimeHours, " +
+            "p.standByTimeHours, p.bluetooth, p.positioning, p.imageUrl, p.description, " +
+            "c.id as color_id, c.code as color_code " +
+            "from orders o " +
+            "left join orderItems item on o.id = item.orderId " +
+            "left join phones p on item.phoneId = p.id " +
+            "left join phone2color on p.id = phone2color.phoneId " +
+            "left join colors c on phone2color.colorId = c.id " +
+            "where o.secureId = ? " +
+            "order by o.createdAt desc";
+    public static final String QUERY_GET_ALL_ORDERS = "select " +
+            "o.id, o.secureId, o.firstName, o.lastName, o.deliveryAddress, o.contactPhoneNo, " +
+            "o.additionalInfo, o.status, o.createdAt, o.subtotal, o.deliveryPrice, " +
+            "o.totalPrice, " +
+            "item.orderId as orderId, item.phoneId as phoneId, item.id as itemId, " +
+            "item.quantity, " +
+            "p.id, p.brand, p.model, p.price, p.displaySizeInches, p.weightGr, " +
+            "p.lengthMm, p.widthMm, p.heightMm, p.announced, p.deviceType, p.os, " +
+            "p.displayResolution, p.pixelDensity, p.displayTechnology, " +
+            "p.backCameraMegapixels, p.frontCameraMegapixels, p.ramGb, " +
+            "p.internalStorageGb, p.batteryCapacityMah, p.talkTimeHours, " +
+            "p.standByTimeHours, p.bluetooth, p.positioning, p.imageUrl, p.description, " +
+            "c.id as color_id, c.code as color_code " +
+            "from orders o " +
+            "left join orderItems item on o.id = item.orderId " +
+            "left join phones p on item.phoneId = p.id " +
+            "left join phone2color on p.id = phone2color.phoneId " +
+            "left join colors c on phone2color.colorId = c.id " +
+            "order by o.createdAt desc";
+    public static final String QUERY_DELETE_ORDER_ITEMS = "delete from orderItems where orderId = ?";
+    public static final String QUERY_SAVE_ORDER = "insert into orders (secureId, firstName, lastName, deliveryAddress, " +
+            "contactPhoneNo, additionalInfo, status, createdAt, subtotal, deliveryPrice, totalPrice) " +
+            "values (:secureId, :firstName, :lastName, :deliveryAddress, " +
+            ":contactPhoneNo, :additionalInfo, :statusAsString, :createdAtAsTimestamp, :subtotal, :deliveryPrice, :totalPrice)";
+    public static final String QUERY_UPDATE_ORDER_BY_ID = "update orders set firstName = :firstName, " +
+            "lastName = :lastName, deliveryAddress = :deliveryAddress, contactPhoneNo = :contactPhoneNo, " +
+            "additionalInfo = :additionalInfo, status = :statusAsString, createdAt = :createdAtAsTimestamp, subtotal = :subtotal, " +
+            "deliveryPrice = :deliveryPrice, totalPrice = :totalPrice where id = :id";
+    public static final String QUERY_SAVE_ORDER_ITEM = "insert into orderItems (orderId, phoneId, quantity) " +
+            "values (?, ?, ?)";
 }

@@ -6,6 +6,7 @@ import com.es.core.model.exceptions.DatabaseException;
 import com.es.core.model.exceptions.DatabaseUpdateException;
 import com.es.core.model.phone.resultSetExtractors.PhoneSetExtractor;
 import jakarta.annotation.Resource;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -14,7 +15,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -33,21 +33,22 @@ public class JdbcPhoneDao implements PhoneDao {
     public Optional<Phone> get(final Long key) {
         List<Phone> phones = jdbcTemplate.query(DBConstants.QUERY_GET_PHONE_WITH_COLORS, phoneSetExtractor, key);
 
-        return phones.stream().findFirst();
+        return CollectionUtils.emptyIfNull(phones).stream().findFirst();
     }
 
     @Override
     @Transactional
     public void save(final Phone phone) {
-        if (phone.getId() == null)
+        if (phone.getId() == null) {
             newPhoneIdFromDb(phone);
+        }
         else {
             if (isExistingPhone(phone)) {
                 jdbcTemplate.update(DBConstants.QUERY_DELETE_PHONE_COLORS, phone.getId());
                 jdbcColorDao.savePhoneColors(phone);
-            } else
+            } else {
                 newPhoneIdFromDb(phone);
-
+            }
         }
     }
 

@@ -7,7 +7,6 @@ import com.es.core.model.phone.mappers.StockRowMapper;
 import jakarta.annotation.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-
 import java.util.Optional;
 
 @Component
@@ -32,11 +31,12 @@ public class JdbcStockDao implements StockDao {
                 stock.getReserved(),
                 stock.getPhone().getId());
 
-        if (rowsUpdated == 0)
+        if (rowsUpdated == 0) {
             jdbcTemplate.update(
                     DBConstants.QUERY_INSERT_STOCK,
                     stock.getPhone().getId(),
                     stock.getStock(),
                     stock.getReserved());
+        }
     }
 }

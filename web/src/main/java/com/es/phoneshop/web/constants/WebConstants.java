@@ -9,6 +9,8 @@ public class WebConstants {
     public static final String CART_COST_ATTR = "cartCost";
     public static final String CART_ATTR = "cart";
     public static final String CART_FORM_ATTR = "cartForm";
+    public static final String ORDER_ATTR = "order";
+    public static final String ORDER_FORM_ATTR = "orderForm";
     public static final String CURR_PAGE_ATTR = "currentPage";
     public static final String TOTAL_PAGES_ATTR = "totalPages";
     public static final String OUT_OF_STOCK_ATTR = "outOfStock";
@@ -22,9 +24,16 @@ public class WebConstants {
     public static final String ERROR_INVALID_PAGE_NUMBER_MESSAGE = "Invalid page number";
     public static final String ERROR_UNEXPECTED_MESSAGE = "An unexpected error occurred: ";
     public static final String ERROR_NO_PHONE_WITH_ID_MESSAGE = "Phone with id doesn't exist. Id: ";
-    public static final String ERROR_OUT_OF_STOCK_MESSAGE = "You entered a high stock. Try again. Current stock: %s";;
+    public static final String ERROR_OUT_OF_STOCK_MESSAGE = "You entered a high stock. Try again. Current stock: %s";
+    public static final String ERROR_EMPTY_CART = "Your cart is empty";
+    public static final String ERROR_INVALID_ORDER_ID = "Order with this id does not exist";
     public static final String PHONE_ATTR = "phone";
     public static final String ERROR_UNKNOWN = "Unknown Error";
     public static final String QUANTITY_MIN_VALID_MESSAGE = "Quantity must be at least 1";
     public static final String QUANTITY_MAX_VALID_MESSAGE = "Quantity mustn't be higher than 5";
+    public static final String FIELD_CANT_BE_EMPTY = "This field can't be empty";
+    public static final String INVALID_PHONE_NUMBER = "Phone number is invalid. It must start with +375 and include 9 numbers after that";
+    public static final String TOO_HIGH_ADDITIONAL_INFO = "Type less than 900 symbols";
+    public static final String OUT_OF_STOCK_INFO = "Some products were out of stock. We deleted them";
+    public static final String OUT_OF_STOCK_ERROR_CODE = "outOfStock";
 }

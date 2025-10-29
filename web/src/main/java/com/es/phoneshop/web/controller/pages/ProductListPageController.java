@@ -13,7 +13,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-
 import java.util.List;
 
 @Controller
@@ -33,6 +32,7 @@ public class ProductListPageController {
             Model model) {
         String validatedQuery = validateQuery(query);
         int totalPages = phoneService.getTotalPageQuantity(validatedQuery);
+
         validatePage(page, totalPages);
         List<Phone> phones = phoneService.getAllPhones(
                 page,
@@ -49,17 +49,19 @@ public class ProductListPageController {
     }
 
     private void validatePage(int page, int totalPages) {
-        if (totalPages == 0)
+        if (totalPages == 0) {
             return;
+        }
 
-        if (page < 1 || page > totalPages)
+        if (page < 1 || page > totalPages) {
             throw new InvalidPageNumberException(WebConstants.ERROR_INVALID_PAGE_NUMBER_MESSAGE);
+        }
     }
 
     private String validateQuery(String query) {
-        if (query != null && !query.isEmpty())
+        if (query != null && !query.isEmpty()) {
             return "%" + query.toLowerCase() + "%";
-
+        }
 
         return query;
     }
