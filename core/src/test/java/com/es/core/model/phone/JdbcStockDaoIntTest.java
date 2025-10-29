@@ -53,7 +53,7 @@ public class JdbcStockDaoIntTest {
         phoneStock.setStock(stock);
         phoneStock.setReserved(reserved);
         phoneStock.setPhone(phone);
-        stockDao.setStock(phoneStock);
+        stockDao.saveStock(phoneStock);
     }
 
     @Test

@@ -8,16 +8,16 @@ import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.PastOrPresent;
 
 public class OrderForm {
-    @NotBlank(message = WebConstants.FIELD_CANT_BE_EMPTY)
+    @NotBlank(message = WebConstants.FIELD_CANT_BE_EMPTY_MESSAGE)
     private String firstName;
-    @NotBlank(message = WebConstants.FIELD_CANT_BE_EMPTY)
+    @NotBlank(message = WebConstants.FIELD_CANT_BE_EMPTY_MESSAGE)
     private String lastName;
-    @NotBlank(message = WebConstants.FIELD_CANT_BE_EMPTY)
+    @NotBlank(message = WebConstants.FIELD_CANT_BE_EMPTY_MESSAGE)
     private String deliveryAddress;
-    @NotBlank(message = WebConstants.FIELD_CANT_BE_EMPTY)
-    @Pattern(regexp = "^\\+375\\d{9}$", message = WebConstants.INVALID_PHONE_NUMBER)
+    @NotBlank(message = WebConstants.FIELD_CANT_BE_EMPTY_MESSAGE)
+    @Pattern(regexp = "^\\+375\\d{9}$", message = WebConstants.INVALID_PHONE_NUMBER_MESSAGE)
     private String contactPhoneNo;
-    @Size(max = 900, message = WebConstants.TOO_HIGH_ADDITIONAL_INFO)
+    @Size(max = 900, message = WebConstants.TOO_HIGH_ADDITIONAL_INFO_MESSAGE)
     private String additionalInfo;
     @PastOrPresent
     private LocalDateTime createdAt;

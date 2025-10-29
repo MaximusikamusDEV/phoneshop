@@ -13,9 +13,12 @@
 
 <div style="margin-top: 20px;"></div>
 
-<h1 class="mb-3">Thank you for your order</h1>
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <h3 class="mb-3">Order number: ${order.id}</h3>
 
-<h3 class="mb-3">Order number: ${order.id}</h3>
+
+    <h3 class="mb-3">Order status: ${order.getStatusAsString()}</h3>
+</div>
 
 <table class="table table-bordered text-center align-middle">
     <thead>
@@ -106,29 +109,62 @@
     </tbody>
 </table>
 
-    <div class="mb-3 row">
-        <label class="col-form-label">First name* ${order.firstName}</label>
+<div class="mb-3 row">
+    <label class="col-form-label">First name* ${order.firstName}</label>
 
-    </div>
-
-    <div class="mb-3 row">
-        <label class="col-form-label">Last name* ${order.lastName}</label>
-    </div>
-
-    <div class="mb-3 row">
-        <label class="col-form-label">Address* ${order.deliveryAddress}</label>
-    </div>
-
-    <div class="mb-3 row">
-        <label class="col-form-label">Phone* ${order.contactPhoneNo}</label>
-    </div>
-
-    <div class="mb-3 row">
-        <label class="col-form-label">${order.additionalInfo}</label>
-    </div>
-
-<div style="display: flex; justify-content: space-between; align-items: center;">
-    <a href="/phoneshop-web/productList" class="btn btn-primary">
-        <i class="bi bi-arrow-left"></i> Back to shopping
-    </a>
 </div>
+
+<div class="mb-3 row">
+    <label class="col-form-label">Last name* ${order.lastName}</label>
+</div>
+
+<div class="mb-3 row">
+    <label class="col-form-label">Address* ${order.deliveryAddress}</label>
+</div>
+
+<div class="mb-3 row">
+    <label class="col-form-label">Phone* ${order.contactPhoneNo}</label>
+</div>
+
+<div class="mb-3 row">
+    <label class="col-form-label">${order.additionalInfo}</label>
+</div>
+
+
+<c:choose>
+    <c:when test="${order.getStatusAsString().equals('NEW')}">
+<div style="display: flex; justify-content: space-around; align-items: center;">
+    <a href="/phoneshop-web/admin/orders" class="btn btn-primary">
+        <i class="bi bi-arrow-left"></i> Back
+    </a>
+
+    <button type="button" class="btn btn-success" onclick="updateStatus('DELIVERED')">
+        Delivered
+    </button>
+
+    <button type="button" class="btn btn-danger" onclick="updateStatus('REJECTED')">
+        Rejected
+    </button>
+
+    <form id="statusForm" method="post">
+        <input type="hidden" name="newStatus" id="status">
+        <input type="hidden" name="_method" value="PUT">
+    </form>
+
+    <script>
+        function updateStatus(status) {
+            document.getElementById('status').value = status;
+            const form = document.getElementById('statusForm');
+            form.action = '/phoneshop-web/admin/orders/${order.id}/status';
+            form.submit();
+        }
+    </script>
+</div>
+    </c:when>
+
+    <c:otherwise>
+        <a href="/phoneshop-web/admin/orders" class="btn btn-primary">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+    </c:otherwise>
+</c:choose>

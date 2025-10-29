@@ -118,6 +118,26 @@ public class DBConstants {
             "left join colors c on phone2color.colorId = c.id " +
             "where o.secureId = ? " +
             "order by o.createdAt desc";
+    public static final String QUERY_GET_ORDER_BY_ID = "select " +
+            "o.secureId, o.id, o.firstName, o.lastName, o.deliveryAddress, o.contactPhoneNo, " +
+            "o.additionalInfo, o.status, o.createdAt, o.subtotal, o.deliveryPrice, " +
+            "o.totalPrice, " +
+            "item.orderId as orderId, item.phoneId as phoneId, item.id as itemId, " +
+            "item.quantity, " +
+            "p.id, p.brand, p.model, p.price, p.displaySizeInches, p.weightGr, " +
+            "p.lengthMm, p.widthMm, p.heightMm, p.announced, p.deviceType, p.os, " +
+            "p.displayResolution, p.pixelDensity, p.displayTechnology, " +
+            "p.backCameraMegapixels, p.frontCameraMegapixels, p.ramGb, " +
+            "p.internalStorageGb, p.batteryCapacityMah, p.talkTimeHours, " +
+            "p.standByTimeHours, p.bluetooth, p.positioning, p.imageUrl, p.description, " +
+            "c.id as color_id, c.code as color_code " +
+            "from orders o " +
+            "left join orderItems item on o.id = item.orderId " +
+            "left join phones p on item.phoneId = p.id " +
+            "left join phone2color on p.id = phone2color.phoneId " +
+            "left join colors c on phone2color.colorId = c.id " +
+            "where o.id = ? " +
+            "order by o.createdAt desc";
     public static final String QUERY_GET_ALL_ORDERS = "select " +
             "o.id, o.secureId, o.firstName, o.lastName, o.deliveryAddress, o.contactPhoneNo, " +
             "o.additionalInfo, o.status, o.createdAt, o.subtotal, o.deliveryPrice, " +
@@ -148,4 +168,6 @@ public class DBConstants {
             "deliveryPrice = :deliveryPrice, totalPrice = :totalPrice where id = :id";
     public static final String QUERY_SAVE_ORDER_ITEM = "insert into orderItems (orderId, phoneId, quantity) " +
             "values (?, ?, ?)";
+    public static final String QUERY_UPDATE_ORDER_STATUS_BY_ID = "update orders set status = :statusAsString " +
+            "where id = :id";
 }

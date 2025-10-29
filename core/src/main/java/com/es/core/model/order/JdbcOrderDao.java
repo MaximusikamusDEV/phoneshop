@@ -14,6 +14,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -33,6 +34,26 @@ public class JdbcOrderDao implements OrderDao {
         List<Order> orders = jdbcTemplate.query(DBConstants.QUERY_GET_ORDER_BY_SECURE_ID, orderSetExtractor, secureId);
 
         return CollectionUtils.emptyIfNull(orders).stream().findFirst();
+    }
+
+    @Override
+    public Optional<Order> getById(Long orderId) {
+        List<Order> orders = jdbcTemplate.query(DBConstants.QUERY_GET_ORDER_BY_ID, orderSetExtractor, orderId);
+
+        return CollectionUtils.emptyIfNull(orders).stream().findFirst();
+    }
+
+    @Override
+    public void updateOrderStatus(Order order) {
+        SqlParameterSource parameters = new BeanPropertySqlParameterSource(order);
+        int rowsUpdated = namedParameterJdbcTemplate.update(
+                DBConstants.QUERY_UPDATE_ORDER_STATUS_BY_ID,
+                parameters
+        );
+
+        if(rowsUpdated == 0) {
+            throw new DatabaseUpdateException(ExceptionConstants.DATABASE_SAVE_PROBLEM);
+        }
     }
 
     @Override

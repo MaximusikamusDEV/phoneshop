@@ -7,4 +7,6 @@ public interface OrderDao {
     void saveOrderWithItems(Order order);
     List<Order> findAll();
     Optional<Order> getBySecureId(String secureId);
+    Optional<Order> getById(Long orderId);
+    void updateOrderStatus(Order order);
 }

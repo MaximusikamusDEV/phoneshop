@@ -3,7 +3,7 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
-<jsp:include page="header.jsp"/>
+<jsp:include page="headerWithMiniCart.jsp"/>
 
 <div style="margin-top: 20px;"></div>
 
@@ -18,8 +18,8 @@
     </a>
 
 
-    <a href="" class="btn btn-primary">
-        Order page
+    <a href="/phoneshop-web/admin/orders" class="btn btn-primary">
+        Orders page
         <i class="bi bi-arrow-right"></i>
     </a>
 </div>
