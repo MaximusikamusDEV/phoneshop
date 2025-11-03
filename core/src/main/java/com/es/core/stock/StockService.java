@@ -6,7 +6,6 @@ import com.es.core.model.phone.Stock;
 
 public interface StockService {
     void reservePhone(Phone phone, int quantity);
-    void saveStock(Stock stock);
     Stock getStock(Phone phone);
     boolean isPhoneInStock(Phone phone, int quantity) throws OutOfStockException;
     void confirmReserved(Phone phone, int quantity);

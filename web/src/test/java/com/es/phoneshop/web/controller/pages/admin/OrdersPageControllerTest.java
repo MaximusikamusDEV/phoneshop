@@ -24,11 +24,9 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.times;
 
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
@@ -103,7 +101,7 @@ public class OrdersPageControllerTest {
         orderItems.add(orderItem);
         orderItems.add(orderItem1);
         order.setOrderItems(orderItems);
-        String status = OrderStatus.DELIVERED.toString();
+        OrderStatus status = OrderStatus.DELIVERED;
         Model model = new ExtendedModelMap();
         Long orderId = 1L;
 
@@ -113,22 +111,20 @@ public class OrdersPageControllerTest {
         String response = ordersPageController.changeOrderStatus(orderId, status, model);
 
         assertEquals(order, model.getAttribute(WebConstants.ORDER_ATTR));
-        assertEquals("adminOrderOverview", response);
-        verify(stockService, times(2)).confirmReserved(any(), anyInt());
+        assertEquals("redirect:/admin/orders/1", response);
 
-        status = OrderStatus.REJECTED.toString();
+        status = OrderStatus.REJECTED;
         doNothing().when(stockService).returnReservedToStock(any(), anyInt());
 
         response = ordersPageController.changeOrderStatus(orderId, status, model);
 
         assertEquals(order, model.getAttribute(WebConstants.ORDER_ATTR));
-        assertEquals("adminOrderOverview", response);
-        verify(stockService, times(2)).returnReservedToStock(any(), anyInt());
+        assertEquals("redirect:/admin/orders/1", response);
     }
 
     @Test
     void testChangeOrderStatusIncorrectOrderId() {
-        String status = OrderStatus.DELIVERED.toString();
+        OrderStatus status = OrderStatus.DELIVERED;
         Model model = new ExtendedModelMap();
         Long orderId = 3456L;
 

@@ -10,10 +10,10 @@ import com.es.phoneshop.web.exceptions.InvalidOrderIdException;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -47,30 +47,15 @@ public class OrdersPageController {
 
     @RequestMapping(method = RequestMethod.PUT, value = "/{orderId}/status")
     public String changeOrderStatus(@PathVariable Long orderId,
-                                    @RequestParam String newStatus,
+                                    @RequestBody OrderStatus newStatus,
                                     Model model) {
-        OrderStatus status = OrderStatus.valueOfCode(newStatus);
         Order order = orderService.getOrderById(orderId)
                 .orElseThrow(() -> new InvalidOrderIdException(WebConstants.ERROR_INVALID_ORDER_ID));
 
-        changeOrderStatus(order, status);
+        orderService.updateOrderStatus(order, newStatus);
 
         model.addAttribute(WebConstants.ORDER_ATTR, order);
 
         return "redirect:/admin/orders/" + orderId;
-    }
-
-    private void changeOrderStatus(Order order, OrderStatus status) {
-        orderService.updateOrderStatus(order, status);
-
-        if(status.equals(OrderStatus.DELIVERED)) {
-            order.getOrderItems().forEach(orderItem ->
-                            stockService.confirmReserved(orderItem.getPhone(), orderItem.getQuantity())
-                    );
-        } else {
-            order.getOrderItems().forEach(orderItem ->
-                    stockService.returnReservedToStock(orderItem.getPhone(), orderItem.getQuantity())
-            );
-        }
     }
 }

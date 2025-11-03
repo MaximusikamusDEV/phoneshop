@@ -6,12 +6,14 @@ import com.es.core.model.phone.Phone;
 import com.es.core.model.phone.PhoneDao;
 import com.es.core.model.phone.Stock;
 import com.es.core.cart.exceptions.OutOfStockException;
+import com.es.core.model.phone.StockDao;
 import com.es.core.stock.StockService;
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.ContextConfiguration;
@@ -42,6 +44,8 @@ public class HttpSessionCartServiceTest {
     @Resource
     private StockService stockService;
     private Phone createdPhone;
+    @Autowired
+    private StockDao stockDao;
 
     @BeforeEach
     void setUp() {
@@ -95,7 +99,7 @@ public class HttpSessionCartServiceTest {
         phoneStock.setStock(stock);
         phoneStock.setReserved(reserved);
         phoneStock.setPhone(phone);
-        stockService.saveStock(phoneStock);
+        stockDao.saveStock(phoneStock);
     }
 
     @Test

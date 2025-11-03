@@ -111,7 +111,18 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public void updateOrderStatus(Order order, OrderStatus orderStatus) {
+        if (orderStatus.equals(OrderStatus.DELIVERED)) {
+            order.getOrderItems().forEach(orderItem ->
+                    stockService.confirmReserved(orderItem.getPhone(), orderItem.getQuantity())
+            );
+        } else {
+            order.getOrderItems().forEach(orderItem ->
+                    stockService.returnReservedToStock(orderItem.getPhone(), orderItem.getQuantity())
+            );
+        }
+
         order.setStatus(orderStatus);
         orderDao.updateOrderStatus(order);
     }

@@ -22,11 +22,6 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
-    public void saveStock(Stock stock) {
-        stockDao.saveStock(stock);
-    }
-
-    @Override
     public Stock getStock(Phone phone){
         return stockDao.getStock(phone);
     }

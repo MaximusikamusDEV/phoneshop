@@ -134,6 +134,10 @@ public class OrderServiceImplTest {
     @Test
     void testUpdateOrderStatus() throws OutOfStockException {
         Order order = new Order();
+        OrderItem orderItem = new OrderItem();
+        List<OrderItem> orderItems = new ArrayList<>();
+        orderItems.add(orderItem);
+        order.setOrderItems(orderItems);
 
         doNothing().when(orderDao).updateOrderStatus(order);
         orderService.updateOrderStatus(order, OrderStatus.DELIVERED);
@@ -141,6 +145,11 @@ public class OrderServiceImplTest {
         assertNotNull(order);
         assertEquals(OrderStatus.DELIVERED, order.getStatus());
         verify(orderDao, times(1)).updateOrderStatus(order);
+
+        orderService.updateOrderStatus(order, OrderStatus.REJECTED);
+
+        assertNotNull(order);
+        assertEquals(OrderStatus.REJECTED, order.getStatus());
     }
 
     @Test

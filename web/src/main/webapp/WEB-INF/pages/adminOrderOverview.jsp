@@ -133,33 +133,38 @@
 
 <c:choose>
     <c:when test="${order.getStatusAsString().equals('NEW')}">
-<div style="display: flex; justify-content: space-around; align-items: center;">
-    <a href="/phoneshop-web/admin/orders" class="btn btn-primary">
-        <i class="bi bi-arrow-left"></i> Back
-    </a>
+        <div style="display: flex; justify-content: space-around; align-items: center;">
+            <a href="/phoneshop-web/admin/orders" class="btn btn-primary">
+                <i class="bi bi-arrow-left"></i> Back
+            </a>
 
-    <button type="button" class="btn btn-success" onclick="updateStatus('DELIVERED')">
-        Delivered
-    </button>
+            <button type="button" class="btn btn-success" onclick="updateStatus('DELIVERED')">
+                Delivered
+            </button>
 
-    <button type="button" class="btn btn-danger" onclick="updateStatus('REJECTED')">
-        Rejected
-    </button>
+            <button type="button" class="btn btn-danger" onclick="updateStatus('REJECTED')">
+                Rejected
+            </button>
 
-    <form id="statusForm" method="post">
-        <input type="hidden" name="newStatus" id="status">
-        <input type="hidden" name="_method" value="PUT">
-    </form>
-
-    <script>
-        function updateStatus(status) {
-            document.getElementById('status').value = status;
-            const form = document.getElementById('statusForm');
-            form.action = '/phoneshop-web/admin/orders/${order.id}/status';
-            form.submit();
-        }
-    </script>
-</div>
+            <script>
+                function updateStatus(status) {
+                    fetch('/phoneshop-web/admin/orders/${order.id}/status', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(status)
+                    })
+                        .then(response => {
+                            if (response.redirected) {
+                                window.location.href = response.url;
+                            } else if (response.ok) {
+                                location.reload();
+                            }
+                        });
+                }
+            </script>
+        </div>
     </c:when>
 
     <c:otherwise>

@@ -8,6 +8,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -21,6 +22,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class StockServiceImplTest {
     @Resource
     private PhoneDao phoneDao;
+    @Resource
+    private StockDao stockDao;
     @Resource
     private StockService stockService;
 
@@ -59,7 +62,7 @@ public class StockServiceImplTest {
         phoneStock.setStock(stock);
         phoneStock.setReserved(reserved);
         phoneStock.setPhone(phone);
-        stockService.saveStock(phoneStock);
+        stockDao.saveStock(phoneStock);
     }
 
     @Test
