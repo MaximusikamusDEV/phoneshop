@@ -1,3 +1,4 @@
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
@@ -19,15 +20,53 @@
         <a class="navbar-brand fw-bold text-primary fs-3 d-flex align-items-center" href="/phoneshop-web/productList">
             <i class="bi bi-phone-fill me-2"></i> PHONIFY
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-            <ul class="nav flex-column nav justify-content-end">
-                <li class="nav-item">
-                    <p><a href="#" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Login</a></p>
-                </li>
-                <a href="/phoneshop-web/cart" id="cartButton" type="button" class="btn btn-primary btn-lg">My cart: ${cartQuantity != 0 ? cartQuantity : 0} items, ${cartCost != 0 ? cartCost : 0}$</a>
-            </ul>
+        <ul class="nav flex-row nav justify-content-end">
+            <sec:authorize access="!isAuthenticated()">
+                <ul class="nav flex-column nav justify-content-end me-3">
+                    <li class="nav-item">
+                        <p><a href="/phoneshop-web/authentication/login"
+                              class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Login</a>
+                        </p>
+                    </li>
+                </ul>
+            </sec:authorize>
+
+            <sec:authorize access="isAuthenticated()">
+                <ul class="nav flex-column nav justify-content-end me-3">
+                    <li class="nav-item">
+                        <p>
+                            <sec:authentication property="principal.username"/>
+                        </p>
+                    </li>
+                </ul>
+
+                <sec:authorize access="hasRole('ROLE_ADMIN')">
+                    <ul class="nav flex-column nav justify-content-end me-3">
+                        <li class="nav-item">
+                            <p><a href="/phoneshop-web/admin/orders"
+                                  class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Admin</a>
+                            </p>
+                        </li>
+                    </ul>
+                </sec:authorize>
+
+                <ul class="nav flex-column nav justify-content-end me-3">
+                    <li class="nav-item">
+                        <p><a href="/phoneshop-web/authentication/logout"
+                              class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Logout</a>
+                        </p>
+                    </li>
+                </ul>
+            </sec:authorize>
+
+            <a href="/phoneshop-web/cart" id="cartButton" type="button" class="btn btn-primary btn-lg">My
+                cart: ${cartQuantity != 0 ? cartQuantity : 0} items, ${cartCost != 0 ? cartCost : 0}$</a>
+
+        </ul>
     </div>
 </nav>
 

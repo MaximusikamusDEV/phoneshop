@@ -4,7 +4,7 @@ import com.es.core.cart.Cart;
 import com.es.core.cart.CartService;
 import com.es.core.model.phone.Phone;
 import com.es.phoneshop.web.constants.WebConstants;
-import com.es.phoneshop.web.services.PhoneService;
+import com.es.core.phone.PhoneService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

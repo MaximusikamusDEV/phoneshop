@@ -7,7 +7,7 @@ import com.es.phoneshop.web.constants.WebConstants;
 import com.es.phoneshop.web.enums.SortField;
 import com.es.phoneshop.web.enums.SortOrder;
 import com.es.phoneshop.web.exceptions.InvalidPageNumberException;
-import com.es.phoneshop.web.services.PhoneService;
+import com.es.core.phone.PhoneService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

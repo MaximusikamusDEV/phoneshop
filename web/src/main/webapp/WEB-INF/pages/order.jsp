@@ -128,6 +128,8 @@
 
         <form:form method="POST" modelAttribute="orderForm">
 
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+
             <div class="mb-3 row">
                 <label class="col-form-label">First name*</label>
                 <div class="col-sm-2">

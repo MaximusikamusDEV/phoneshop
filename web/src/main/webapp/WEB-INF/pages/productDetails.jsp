@@ -2,7 +2,11 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<jsp:include page="headerWithMiniCart.jsp"/>
+<head>
+    <jsp:include page="headerWithMiniCart.jsp"/>
+    <meta name="_csrf" content="${_csrf.token}"/>
+    <meta name="_csrf_header" content="${_csrf.headerName}"/>
+</head>
 
 <div style="margin-top: 20px;"></div>
 
@@ -109,11 +113,18 @@
 
 <script>
     $(document).ready(function () {
+        $(document).ajaxSend(function (e, xhr, options){
+            var token =  $("meta[name='_csrf']").attr('content');
+            var header = $("[name='_csrf_header']").attr('content');
+            xhr.setRequestHeader(header, token);
+        });
+
         $('button[phone-id]').click(function () {
             var container = $(this).closest('.border');
             var quantityInput = container.find('input[name="quantity"]');
             var phoneId = $(this).attr('phone-id');
             var quantity = quantityInput.val();
+
 
             $('.error-placeholder').empty();
 

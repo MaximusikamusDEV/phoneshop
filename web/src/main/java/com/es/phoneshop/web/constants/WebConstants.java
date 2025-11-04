@@ -1,7 +1,6 @@
 package com.es.phoneshop.web.constants;
 
 public class WebConstants {
-    public static final int PHONE_PAGE_AMOUNT = 10;
     public static final String CART_QUANTITY_ATTR = "cartQuantity";
     public static final String CART_COST_ATTR = "cartCost";
     public static final String CART_ATTR = "cart";
@@ -13,6 +12,7 @@ public class WebConstants {
     public static final String CURR_PAGE_ATTR = "currentPage";
     public static final String TOTAL_PAGES_ATTR = "totalPages";
     public static final String OUT_OF_STOCK_ATTR = "outOfStock";
+    public static final String ERROR_ATTR = "error";
     public static final String PHONE_ATTR = "phone";
     public static final String BRAND_VALUE = "brand";
     public static final String ASC_VALUE = "asc";
@@ -38,5 +38,5 @@ public class WebConstants {
     public static final String QUANTITY_NULL_VALID_MESSAGE = "Quantity cant be empty or null";
     public static final String PHONE_ID_VALID_MESSAGE = "Phone id can't be lower than zero or null";
     public static final String SUCCESS_ADD_MESSAGE = "Product Added Successfully";
-
+    public static final String INVALID_CREDENTIALS_MESSAGE = "Invalid username or password";
 }
