@@ -1,10 +1,8 @@
-package com.es.phoneshop.web.services;
+package com.es.core.phone;
 
+import com.es.core.model.constants.ExceptionConstants;
 import com.es.core.model.phone.Phone;
 import com.es.core.model.phone.PhoneDao;
-import com.es.phoneshop.web.constants.WebConstants;
-import com.es.phoneshop.web.enums.SortField;
-import com.es.phoneshop.web.enums.SortOrder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -59,12 +57,12 @@ public class PhoneServiceTest {
     void testGetAllPhones() {
         String query = "query";
         int page = 1;
-        String sortField = SortField.PRICE.getCode();
-        String sortOrder = SortOrder.ASC.getCode();
+        String sortField = "p.price";
+        String sortOrder = "p.asc";
         List<Phone> phones = new ArrayList<>();
-        int offset = (page - 1) * WebConstants.PHONE_PAGE_AMOUNT;
+        int offset = (page - 1) * ExceptionConstants.PHONE_PAGE_AMOUNT;
 
-        when(phoneDao.findAllInStockSorted(query, offset, WebConstants.PHONE_PAGE_AMOUNT, sortField, sortOrder)).thenReturn(phones);
+        when(phoneDao.findAllInStockSorted(query, offset, ExceptionConstants.PHONE_PAGE_AMOUNT, sortField, sortOrder)).thenReturn(phones);
 
         List<Phone> result = phoneDisplayService.getAllPhones(page, query, sortField, sortOrder);
 

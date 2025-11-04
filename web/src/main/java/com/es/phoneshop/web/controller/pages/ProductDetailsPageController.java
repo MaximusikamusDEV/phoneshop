@@ -2,7 +2,7 @@ package com.es.phoneshop.web.controller.pages;
 
 import com.es.core.cart.CartService;
 import com.es.phoneshop.web.constants.WebConstants;
-import com.es.phoneshop.web.services.PhoneService;
+import com.es.core.phone.PhoneService;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

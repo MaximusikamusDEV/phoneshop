@@ -17,11 +17,6 @@
         <i class="bi bi-arrow-left"></i> Back to product list
     </a>
 
-
-    <a href="/phoneshop-web/admin/orders" class="btn btn-primary">
-        Orders page
-        <i class="bi bi-arrow-right"></i>
-    </a>
 </div>
 
 <div style="margin-top: 20px;"></div>
@@ -103,6 +98,7 @@
 
             <div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 10px; margin-bottom: 10px;">
 
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
                 <button type="submit" name="updateCart" value="update" class="btn btn-primary me-4">
                     Update
                 </button>
@@ -113,6 +109,7 @@
 
         <form id="deleteForm" method="post">
             <input type="hidden" name="_method" value="DELETE"/>
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
         </form>
 
         <script>
