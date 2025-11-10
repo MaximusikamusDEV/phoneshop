@@ -10,8 +10,8 @@ import com.es.core.phone.PhoneService;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
@@ -23,7 +23,7 @@ public class ProductListPageController {
     @Resource
     private CartService cartService;
 
-    @RequestMapping(method = RequestMethod.GET)
+    @GetMapping
     public String showProductList(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(required = false) String query,

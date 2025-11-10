@@ -56,9 +56,14 @@
 
                 <ul class="nav flex-column nav justify-content-end me-3">
                     <li class="nav-item">
-                        <p><a href="/phoneshop-web/authentication/logout"
-                              class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Logout</a>
-                        </p>
+                        <form action="/phoneshop-web/authentication/logout" method="post">
+                            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                            <button type="submit" class=
+                                    "btn btn-link p-0 m-0 align-baseline
+                                     link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
+                                Logout
+                            </button>
+                        </form>
                     </li>
                 </ul>
             </sec:authorize>

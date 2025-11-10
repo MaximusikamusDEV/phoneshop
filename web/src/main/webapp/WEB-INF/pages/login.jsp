@@ -20,7 +20,7 @@
 
             <div style="margin-top: 20px;"></div>
 
-            <form action="/phoneshop-web/authentication/login" method="post">
+            <form action="${pageContext.request.contextPath}/authentication/login" method="post">
                 <div class="row mb-3">
                     <label for="username" class="col-sm-2 col-form-label">Username</label>
                     <div class="col-sm-10">
@@ -39,8 +39,8 @@
                 <button type="submit" class="btn btn-primary">Log in</button>
             </form>
 
-            <c:if test="${not empty(error)}">
-                <h1 class="text-danger">${error}</h1>
+            <c:if test="${param.error != null}">
+                <h1 class="text-danger">Invalid username or password. Try again.</h1>
             </c:if>
         </div>
     </div>

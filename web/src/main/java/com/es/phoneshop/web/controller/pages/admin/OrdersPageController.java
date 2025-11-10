@@ -7,12 +7,12 @@ import com.es.phoneshop.web.constants.WebConstants;
 import com.es.phoneshop.web.exceptions.EmptyOrderListException;
 import com.es.phoneshop.web.exceptions.InvalidOrderIdException;
 import jakarta.annotation.Resource;
-import jakarta.annotation.security.RolesAllowed;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 
@@ -22,8 +22,7 @@ public class OrdersPageController {
     @Resource
     private OrderService orderService;
 
-    @RolesAllowed("ROLE_ADMIN")
-    @RequestMapping(method = RequestMethod.GET)
+    @GetMapping
     public String getOrderListPage(Model model) {
         List<Order> orderList = orderService.getAllOrders()
                 .orElseThrow(() -> new EmptyOrderListException(WebConstants.EMPTY_ORDER_LIST_MESSAGE));
@@ -33,8 +32,7 @@ public class OrdersPageController {
         return "adminOrderList";
     }
 
-    @RolesAllowed("ROLE_ADMIN")
-    @RequestMapping(method = RequestMethod.GET, value = "/{orderId}")
+    @GetMapping(value = "/{orderId}")
     public String getOrderPage(@PathVariable Long orderId, Model model) {
         Order order = orderService.getOrderById(orderId)
                 .orElseThrow(() -> new InvalidOrderIdException(WebConstants.ERROR_INVALID_ORDER_ID));
@@ -44,8 +42,7 @@ public class OrdersPageController {
         return "adminOrderOverview";
     }
 
-    @RolesAllowed("ROLE_ADMIN")
-    @RequestMapping(method = RequestMethod.PUT, value = "/{orderId}/status")
+    @PutMapping(value = "/{orderId}/status")
     public String changeOrderStatus(@PathVariable Long orderId,
                                     @RequestBody OrderStatus newStatus,
                                     Model model) {

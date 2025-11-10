@@ -6,8 +6,8 @@ import com.es.core.phone.PhoneService;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
@@ -18,7 +18,7 @@ public class ProductDetailsPageController {
     @Resource
     private CartService cartService;
 
-    @RequestMapping(method = RequestMethod.GET, value = "/{phoneId}")
+    @GetMapping(value = "/{phoneId}")
     public String showProductDetails(@PathVariable("phoneId") Long id, Model model){
         model.addAttribute(WebConstants.CART_COST_ATTR, cartService.getCart().getTotalCost());
         model.addAttribute(WebConstants.CART_QUANTITY_ATTR, cartService.getCart().getTotalQuantity());

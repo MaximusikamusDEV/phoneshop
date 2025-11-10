@@ -18,7 +18,9 @@ import org.springframework.validation.BindingResult;
 import java.util.List;
 import java.util.stream.IntStream;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -30,7 +32,7 @@ public class CartPageController {
     @Resource
     private CartFormMapper cartFormMapper;
 
-    @RequestMapping(method = RequestMethod.GET)
+    @GetMapping
     public String getCart(Model model) {
         Cart cart = cartService.getCart();
         CartForm cartForm = cartFormMapper.convertToCartForm(cart);
@@ -39,7 +41,7 @@ public class CartPageController {
         return "cart";
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/updateCart")
+    @PostMapping(value = "/updateCart")
     public String updateCart(@Valid @ModelAttribute(WebConstants.CART_FORM_ATTR) CartForm cartForm,
                              BindingResult bindingResult,
                              Model model) {
@@ -64,7 +66,7 @@ public class CartPageController {
         return "redirect:/cart";
     }
 
-    @RequestMapping(method = RequestMethod.DELETE, value = "/delete/{phoneId}")
+    @DeleteMapping(value = "/delete/{phoneId}")
     public String deleteCart(@PathVariable("phoneId") Long deletePhoneId, Model model) {
         try {
             cartService.remove(deletePhoneId);

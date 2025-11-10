@@ -14,7 +14,6 @@ import com.es.core.model.phone.Stock;
 import com.es.core.stock.StockService;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -102,19 +101,16 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public Optional<Order> getOrderById(Long orderId) {
         return orderDao.getById(orderId);
     }
 
     @Override
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public Optional<List<Order>> getAllOrders() {
         return Optional.ofNullable(orderDao.findAll());
     }
 
     @Override
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Transactional
     public void updateOrderStatus(Order order, OrderStatus orderStatus) {
         if (orderStatus.equals(OrderStatus.DELIVERED)) {

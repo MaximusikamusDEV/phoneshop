@@ -23,6 +23,20 @@
         <security:intercept-url pattern="/admin/**" access="hasRole('ADMIN')"/>
         <security:intercept-url pattern="/**" access="permitAll"/>
 
+        <security:form-login
+            login-page="/authentication/login"
+            login-processing-url="/authentication/login"
+            authentication-failure-url="/authentication/login?error"
+            default-target-url="/"
+            username-parameter="username"
+            password-parameter="password"
+        />
+
+        <security:logout
+            logout-url="/authentication/logout"
+            logout-success-url="/"
+        />
+
         <security:headers>
             <security:cache-control/>
         </security:headers>
