@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<jsp:include page="header.jsp"/>
+<jsp:include page="headerWithMiniCart.jsp"/>
 
 <div style="margin-top: 20px;"></div>
 

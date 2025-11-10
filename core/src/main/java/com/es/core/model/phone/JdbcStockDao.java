@@ -24,7 +24,7 @@ public class JdbcStockDao implements StockDao {
     }
 
     @Override
-    public void setStock(Stock stock) {
+    public void saveStock(Stock stock) {
         int rowsUpdated = jdbcTemplate.update(
                 DBConstants.QUERY_UPDATE_STOCK,
                 stock.getStock(),

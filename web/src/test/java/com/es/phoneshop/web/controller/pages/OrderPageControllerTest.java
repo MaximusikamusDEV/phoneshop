@@ -66,10 +66,8 @@ public class OrderPageControllerTest {
 
         String response = orderPageController.getOrder(model);
 
-        verify(cartService, times(3)).getCart();
+        verify(cartService).getCart();
         assertEquals(order, model.getAttribute(WebConstants.ORDER_ATTR));
-        assertEquals(BigDecimal.TEN, model.getAttribute(WebConstants.CART_COST_ATTR));
-        assertEquals(1, model.getAttribute(WebConstants.CART_QUANTITY_ATTR));
         assertEquals("order", response);
     }
 
@@ -143,10 +141,8 @@ public class OrderPageControllerTest {
 
         String response = orderPageController.placeOrder(orderForm, bindingResult, model);
 
-        verify(cartService, times(3)).getCart();
+        verify(cartService).getCart();
         assertEquals(order, model.getAttribute(WebConstants.ORDER_ATTR));
-        assertEquals(BigDecimal.TEN, model.getAttribute(WebConstants.CART_COST_ATTR));
-        assertEquals(1, model.getAttribute(WebConstants.CART_QUANTITY_ATTR));
         assertEquals("order", response);
     }
 
@@ -195,15 +191,13 @@ public class OrderPageControllerTest {
 
         String response = orderPageController.placeOrder(orderForm, bindingResult, model);
 
-        verify(cartService, times(4)).getCart();
+        verify(cartService, times(2)).getCart();
         assertEquals(order.getFirstName(), orderForm.getFirstName());
         assertEquals(order.getLastName(), orderForm.getLastName());
         assertEquals(order.getAdditionalInfo(), orderForm.getAdditionalInfo());
         assertEquals(order.getDeliveryAddress(), orderForm.getDeliveryAddress());
         assertEquals(order.getContactPhoneNo(), orderForm.getContactPhoneNo());
         assertEquals(order, model.getAttribute(WebConstants.ORDER_ATTR));
-        assertEquals(BigDecimal.TEN, model.getAttribute(WebConstants.CART_COST_ATTR));
-        assertEquals(1, model.getAttribute(WebConstants.CART_QUANTITY_ATTR));
         assertEquals("order", response);
     }
 

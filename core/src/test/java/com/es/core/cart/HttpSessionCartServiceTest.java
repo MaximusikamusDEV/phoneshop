@@ -6,12 +6,14 @@ import com.es.core.model.phone.Phone;
 import com.es.core.model.phone.PhoneDao;
 import com.es.core.model.phone.Stock;
 import com.es.core.cart.exceptions.OutOfStockException;
+import com.es.core.model.phone.StockDao;
 import com.es.core.stock.StockService;
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.ContextConfiguration;
@@ -36,12 +38,14 @@ public class HttpSessionCartServiceTest {
     @Resource
     private PhoneDao phoneDao;
     @Resource
-    HttpSessionCartService httpSessionCartService;
+    private CartService cartService;
     @Resource
     private Cart cart;
     @Resource
     private StockService stockService;
     private Phone createdPhone;
+    @Autowired
+    private StockDao stockDao;
 
     @BeforeEach
     void setUp() {
@@ -95,12 +99,12 @@ public class HttpSessionCartServiceTest {
         phoneStock.setStock(stock);
         phoneStock.setReserved(reserved);
         phoneStock.setPhone(phone);
-        stockService.setStock(phoneStock);
+        stockDao.saveStock(phoneStock);
     }
 
     @Test
     void testGetCart() {
-        Cart cart = httpSessionCartService.getCart();
+        Cart cart = cartService.getCart();
         assertNotNull(cart);
     }
 
@@ -109,8 +113,8 @@ public class HttpSessionCartServiceTest {
         createdPhone.setId(1L);
         savePhoneWithStock(createdPhone, 100, 0);
 
-        httpSessionCartService.addPhone(createdPhone.getId(), 1);
-        Cart cart = httpSessionCartService.getCart();
+        cartService.addPhone(createdPhone.getId(), 1);
+        Cart cart = cartService.getCart();
         assertNotNull(cart);
         assertEquals(createdPhone.getId(), cart.getCartItems().get(0).getPhone().getId());
     }
@@ -121,12 +125,12 @@ public class HttpSessionCartServiceTest {
         createdPhone.setId(1L);
         savePhoneWithStock(createdPhone, 100, 0);
 
-        httpSessionCartService.addPhone(createdPhone.getId(), 1);
-        Cart cart = httpSessionCartService.getCart();
+        cartService.addPhone(createdPhone.getId(), 1);
+        Cart cart = cartService.getCart();
         assertNotNull(cart);
         assertEquals(1, cart.getCartItems().get(0).getQuantity());
-        httpSessionCartService.addPhone(createdPhone.getId(), 4);
-        cart = httpSessionCartService.getCart();
+        cartService.addPhone(createdPhone.getId(), 4);
+        cart = cartService.getCart();
         assertNotNull(cart);
         assertEquals(5, cart.getCartItems().get(0).getQuantity());
         assertEquals(createdPhone.getId(), cart.getCartItems().get(0).getPhone().getId());
@@ -138,11 +142,11 @@ public class HttpSessionCartServiceTest {
         createdPhone.setId(1L);
         savePhoneWithStock(createdPhone, 100, 0);
 
-        httpSessionCartService.addPhone(createdPhone.getId(), 1);
-        Cart cart = httpSessionCartService.getCart();
+        cartService.addPhone(createdPhone.getId(), 1);
+        Cart cart = cartService.getCart();
         assertNotNull(cart);
         assertEquals(1, cart.getCartItems().get(0).getQuantity());
-        assertThrows(HighQuantityException.class, () -> httpSessionCartService.addPhone(createdPhone.getId(), 5));
+        assertThrows(HighQuantityException.class, () -> cartService.addPhone(createdPhone.getId(), 5));
     }
 
     @Test
@@ -150,9 +154,9 @@ public class HttpSessionCartServiceTest {
         List<CartItem> newCartItems = new ArrayList<>();
         Cart newCart = new Cart();
         newCart.setCartItems(newCartItems);
-        assertNotEquals(newCart, httpSessionCartService.getCart());
-        httpSessionCartService.update(newCartItems);
-        assertEquals(httpSessionCartService.getCart().getCartItems(), newCartItems);
+        assertNotEquals(newCart, cartService.getCart());
+        cartService.update(newCartItems);
+        assertEquals(cartService.getCart().getCartItems(), newCartItems);
     }
 
     @Test
@@ -171,11 +175,11 @@ public class HttpSessionCartServiceTest {
 
         Cart newCart = new Cart();
         newCart.setCartItems(newCartItems);
-        assertNotEquals(newCart, httpSessionCartService.getCart());
-        httpSessionCartService.update(newCartItems);
-        assertEquals(httpSessionCartService.getCart().getCartItems(), newCartItems);
+        assertNotEquals(newCart, cartService.getCart());
+        cartService.update(newCartItems);
+        assertEquals(cartService.getCart().getCartItems(), newCartItems);
 
-        assertEquals(BigDecimal.valueOf(50.5), httpSessionCartService.getCart().getTotalCost());
+        assertEquals(BigDecimal.valueOf(50.5), cartService.getCart().getTotalCost());
     }
 
     @Test
@@ -183,9 +187,9 @@ public class HttpSessionCartServiceTest {
         List<CartItem> newCartItems = new ArrayList<>();
         Cart newCart = new Cart();
         newCart.setCartItems(newCartItems);
-        httpSessionCartService.update(newCartItems);
+        cartService.update(newCartItems);
         int quantity = 5;
-        quantity = httpSessionCartService.getCart().getTotalQuantity();
+        quantity = cartService.getCart().getTotalQuantity();
         assertEquals(0, quantity);
     }
 
@@ -194,7 +198,7 @@ public class HttpSessionCartServiceTest {
         List<CartItem> newCartItems = new ArrayList<>();
         Cart newCart = new Cart();
         newCart.setCartItems(newCartItems);
-        httpSessionCartService.update(newCartItems);
+        cartService.update(newCartItems);
 
         createdPhone.setId(1L);
         savePhoneWithStock(createdPhone, 100, 0);
@@ -206,14 +210,14 @@ public class HttpSessionCartServiceTest {
         savePhoneWithStock(createdPhone, 100, 0);
         Long secondPhoneId = createdPhone.getId();
 
-        httpSessionCartService.addPhone(firstPhoneId, 1);
-        httpSessionCartService.addPhone(secondPhoneId, 2);
-        Cart cart = httpSessionCartService.getCart();
+        cartService.addPhone(firstPhoneId, 1);
+        cartService.addPhone(secondPhoneId, 2);
+        Cart cart = cartService.getCart();
         assertNotNull(cart);
         assertEquals(1, cart.getCartItems().get(0).getQuantity());
         assertEquals(2, cart.getCartItems().get(1).getQuantity());
-        httpSessionCartService.remove(firstPhoneId);
-        cart = httpSessionCartService.getCart();
+        cartService.remove(firstPhoneId);
+        cart = cartService.getCart();
         assertNotNull(cart);
         assertEquals(2, cart.getCartItems().get(0).getQuantity());
     }
@@ -221,7 +225,7 @@ public class HttpSessionCartServiceTest {
     @Test
     void testRemoveWithException() {
         createdPhone.setId(10L);
-        assertThrows(ItemNotExistException.class, () -> httpSessionCartService.remove(createdPhone.getId()));
+        assertThrows(ItemNotExistException.class, () -> cartService.remove(createdPhone.getId()));
     }
 
     @Test
@@ -229,7 +233,7 @@ public class HttpSessionCartServiceTest {
         List<CartItem> newCartItems = new ArrayList<>();
         Cart newCart = new Cart();
         newCart.setCartItems(newCartItems);
-        httpSessionCartService.update(newCartItems);
+        cartService.update(newCartItems);
 
         createdPhone.setId(1L);
         createdPhone.setPrice(BigDecimal.valueOf(10));
@@ -243,8 +247,8 @@ public class HttpSessionCartServiceTest {
         savePhoneWithStock(createdPhone, 100, 0);
         Long secondPhoneId = createdPhone.getId();
 
-        httpSessionCartService.addPhone(firstPhoneId, 1);
-        httpSessionCartService.addPhone(secondPhoneId, 2);
+        cartService.addPhone(firstPhoneId, 1);
+        cartService.addPhone(secondPhoneId, 2);
 
         assertEquals(BigDecimal.valueOf(50.0), cart.getTotalCost());
     }
@@ -266,7 +270,7 @@ public class HttpSessionCartServiceTest {
         Cart newCart = new Cart();
         newCart.setCartItems(newCartItems);
 
-        assertThrows(OutOfStockException.class, () -> httpSessionCartService.addPhone(phoneId, 5));
+        assertThrows(OutOfStockException.class, () -> cartService.addPhone(phoneId, 5));
     }
 
     @Test
@@ -274,14 +278,14 @@ public class HttpSessionCartServiceTest {
         createdPhone.setId(1L);
         savePhoneWithStock(createdPhone, 100, 0);
 
-        httpSessionCartService.addPhone(createdPhone.getId(), 1);
-        Cart cart = httpSessionCartService.getCart();
+        cartService.addPhone(createdPhone.getId(), 1);
+        Cart cart = cartService.getCart();
         assertNotNull(cart);
         assertEquals(1, cart.getCartItems().get(0).getQuantity());
 
-        httpSessionCartService.clearCart();
+        cartService.clearCart();
 
-        cart = httpSessionCartService.getCart();
+        cart = cartService.getCart();
 
         assertEquals(0, cart.getCartItems().size());
         assertEquals(BigDecimal.ZERO, cart.getTotalCost());

@@ -34,7 +34,8 @@ public class OrderPageController {
         }
 
         Order order = orderService.createOrder(cart);
-        populateOrderModel(order, model);
+
+        model.addAttribute(WebConstants.ORDER_ATTR, order);
         model.addAttribute(WebConstants.ORDER_FORM_ATTR, new OrderForm());
         return "order";
     }
@@ -55,26 +56,22 @@ public class OrderPageController {
         }
 
         if (bindingResult.hasErrors()) {
-            populateOrderModel(order, model);
+            model.addAttribute(WebConstants.ORDER_ATTR, order);
             return "order";
         }
 
         try {
             orderService.placeOrder(order);
         } catch (OutOfStockException e) {
-            bindingResult.reject(WebConstants.OUT_OF_STOCK_ERROR_CODE, WebConstants.OUT_OF_STOCK_INFO);
+            bindingResult.reject(WebConstants.OUT_OF_STOCK_ERROR_CODE, WebConstants.OUT_OF_STOCK_INFO_MESSAGE);
             order = orderService.createOrder(cartService.getCart());
-            populateOrderModel(order, model);
+
+            model.addAttribute(WebConstants.ORDER_ATTR, order);
+
             return "order";
         }
 
         return "redirect:/orderOverview/" + order.getSecureId();
-    }
-
-    private void populateOrderModel(Order order, Model model) {
-        model.addAttribute(WebConstants.ORDER_ATTR, order);
-        model.addAttribute(WebConstants.CART_COST_ATTR, cartService.getCart().getTotalCost());
-        model.addAttribute(WebConstants.CART_QUANTITY_ATTR, cartService.getCart().getTotalQuantity());
     }
 
     private void populateOrderFormToOrder(Order order, OrderForm orderForm) {

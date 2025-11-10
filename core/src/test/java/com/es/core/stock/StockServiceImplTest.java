@@ -8,6 +8,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -21,6 +22,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class StockServiceImplTest {
     @Resource
     private PhoneDao phoneDao;
+    @Resource
+    private StockDao stockDao;
     @Resource
     private StockService stockService;
 
@@ -59,7 +62,7 @@ public class StockServiceImplTest {
         phoneStock.setStock(stock);
         phoneStock.setReserved(reserved);
         phoneStock.setPhone(phone);
-        stockService.setStock(phoneStock);
+        stockDao.saveStock(phoneStock);
     }
 
     @Test
@@ -88,11 +91,10 @@ public class StockServiceImplTest {
     }
 
     @Test
-    void testSetStock() {
+    void testSaveStock() {
         Phone phone = setCreatedPhone();
         phoneDao.save(phone);
         savePhoneStock(phone, 10, 1);
-
     }
 
     @Test
@@ -105,5 +107,35 @@ public class StockServiceImplTest {
         assertEquals(stockService.getStock(phone).getPhone(), phone);
         assertTrue(stockService.isPhoneInStock(phone, 1));
         assertFalse(stockService.isPhoneInStock(phone, 2000));
+    }
+
+    @Test
+    void testConfirmReserved() {
+        Phone phone = setCreatedPhone();
+        phoneDao.save(phone);
+        savePhoneStock(phone, 10, 5);
+        assertEquals(5, (int) stockService.getStock(phone).getReserved());
+        assertEquals(10, (int) stockService.getStock(phone).getStock());
+        assertEquals(stockService.getStock(phone).getPhone(), phone);
+
+        stockService.confirmReserved(phone, 3);
+
+        assertEquals(2, (int) stockService.getStock(phone).getReserved());
+        assertEquals(10, (int) stockService.getStock(phone).getStock());
+    }
+
+    @Test
+    void testReturnReservedToStock() {
+        Phone phone = setCreatedPhone();
+        phoneDao.save(phone);
+        savePhoneStock(phone, 10, 5);
+        assertEquals(5, (int) stockService.getStock(phone).getReserved());
+        assertEquals(10, (int) stockService.getStock(phone).getStock());
+        assertEquals(stockService.getStock(phone).getPhone(), phone);
+
+        stockService.returnReservedToStock(phone, 3);
+
+        assertEquals(2, (int) stockService.getStock(phone).getReserved());
+        assertEquals(13, (int) stockService.getStock(phone).getStock());
     }
 }

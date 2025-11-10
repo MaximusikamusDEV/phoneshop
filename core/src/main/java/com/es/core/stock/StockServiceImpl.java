@@ -18,12 +18,7 @@ public class StockServiceImpl implements StockService {
         stock.setReserved(stock.getReserved() + quantity);
         stock.setStock(stock.getStock() - quantity);
 
-        stockDao.setStock(stock);
-    }
-
-    @Override
-    public void setStock(Stock stock) {
-        stockDao.setStock(stock);
+        stockDao.saveStock(stock);
     }
 
     @Override
@@ -35,5 +30,20 @@ public class StockServiceImpl implements StockService {
     public boolean isPhoneInStock(Phone phone, int quantity) throws OutOfStockException {
         Stock stock = stockDao.getStock(phone);
         return quantity <= stock.getStock();
+    }
+
+    @Override
+    public void confirmReserved(Phone phone, int quantity) {
+        Stock stock = stockDao.getStock(phone);
+        stock.setReserved(stock.getReserved() - quantity);
+        stockDao.saveStock(stock);
+    }
+
+    @Override
+    public void returnReservedToStock(Phone phone, int quantity) {
+        Stock stock = stockDao.getStock(phone);
+        stock.setReserved(stock.getReserved() - quantity);
+        stock.setStock(stock.getStock() + quantity);
+        stockDao.saveStock(stock);
     }
 }

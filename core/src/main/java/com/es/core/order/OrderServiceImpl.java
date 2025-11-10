@@ -16,6 +16,7 @@ import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -65,7 +66,7 @@ public class OrderServiceImpl implements OrderService {
         List<OrderItem> oufOfStockItems = new ArrayList<>();
 
         order.getOrderItems().forEach(item -> {
-            if (isPhoneInStock(item.getPhone(), item.getQuantity())){
+            if (isPhoneInStock(item.getPhone(), item.getQuantity())) {
                 availableItems.add(item);
             } else {
                 oufOfStockItems.add(item);
@@ -86,9 +87,9 @@ public class OrderServiceImpl implements OrderService {
 
         order.setOrderItems(availableItems);
 
-        order.getOrderItems().forEach(item -> {
-            stockService.reservePhone(item.getPhone(), item.getQuantity());
-        });
+        order.getOrderItems().forEach(item ->
+                stockService.reservePhone(item.getPhone(), item.getQuantity())
+        );
 
         orderDao.saveOrderWithItems(order);
         cartService.clearCart();
@@ -97,6 +98,33 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Optional<Order> getOrderBySecureId(String orderSecureId) {
         return orderDao.getBySecureId(orderSecureId);
+    }
+
+    @Override
+    public Optional<Order> getOrderById(Long orderId) {
+        return orderDao.getById(orderId);
+    }
+
+    @Override
+    public Optional<List<Order>> getAllOrders() {
+        return Optional.ofNullable(orderDao.findAll());
+    }
+
+    @Override
+    @Transactional
+    public void updateOrderStatus(Order order, OrderStatus orderStatus) {
+        if (orderStatus.equals(OrderStatus.DELIVERED)) {
+            order.getOrderItems().forEach(orderItem ->
+                    stockService.confirmReserved(orderItem.getPhone(), orderItem.getQuantity())
+            );
+        } else {
+            order.getOrderItems().forEach(orderItem ->
+                    stockService.returnReservedToStock(orderItem.getPhone(), orderItem.getQuantity())
+            );
+        }
+
+        order.setStatus(orderStatus);
+        orderDao.updateOrderStatus(order);
     }
 
     private String generateOrderSecureId() {

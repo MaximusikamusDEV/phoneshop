@@ -3,9 +3,9 @@ package com.es.core.cart;
 import com.es.core.cart.exceptions.ItemNotExistException;
 import com.es.core.model.constants.ExceptionConstants;
 import com.es.core.model.exceptions.HighQuantityException;
-import com.es.core.model.phone.JdbcPhoneDao;
 import com.es.core.model.phone.Phone;
 import com.es.core.cart.exceptions.OutOfStockException;
+import com.es.core.model.phone.PhoneDao;
 import com.es.core.stock.StockService;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
@@ -21,7 +21,7 @@ public class HttpSessionCartService implements CartService {
     @Resource
     private Cart cart;
     @Resource
-    private JdbcPhoneDao phoneDao;
+    private PhoneDao phoneDao;
     @Resource
     private StockService stockService;
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
