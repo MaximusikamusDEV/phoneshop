@@ -13,9 +13,10 @@ import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 @RequestMapping(value = "/order")
@@ -25,7 +26,7 @@ public class OrderPageController {
     @Resource
     private CartService cartService;
 
-    @RequestMapping(method = RequestMethod.GET)
+    @GetMapping
     public String getOrder(Model model) {
         Cart cart = cartService.getCart();
 
@@ -40,7 +41,7 @@ public class OrderPageController {
         return "order";
     }
 
-    @RequestMapping(method = RequestMethod.POST)
+    @PostMapping
     public String placeOrder(@Valid @ModelAttribute(WebConstants.ORDER_FORM_ATTR) OrderForm orderForm,
                              BindingResult bindingResult,
                              Model model) {

@@ -17,10 +17,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import java.util.Optional;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+
 
 @Controller
 @RequestMapping(value = "/ajaxCart")
@@ -28,7 +30,7 @@ public class AjaxCartController {
     @Resource
     private CartService cartService;
 
-    @RequestMapping(method = RequestMethod.POST)
+    @PostMapping
     @ResponseBody
     public ResponseEntity<AjaxCartResponseDto> addPhone(@Valid @RequestBody CartItemForm cartItemForm,
                                                         BindingResult bindingResult) throws ItemNotExistException, OutOfStockException, HighQuantityException {
@@ -45,7 +47,7 @@ public class AjaxCartController {
         return ResponseEntity.ok().body(response);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/miniCart")
+    @GetMapping(value = "/miniCart")
     @ResponseBody
     public ResponseEntity<MiniCart> getMiniCart() {
         Cart cart = cartService.getCart();

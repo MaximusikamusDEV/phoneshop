@@ -3,7 +3,11 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
-<jsp:include page="headerWithoutMiniCart.jsp"/>
+<head>
+    <jsp:include page="headerWithoutMiniCart.jsp"/>
+    <meta name="_csrf" content="${_csrf.token}"/>
+    <meta name="_csrf_header" content="${_csrf.headerName}"/>
+</head>
 
 <div style="margin-top: 20px;"></div>
 
@@ -147,11 +151,15 @@
             </button>
 
             <script>
+                const token =  document.querySelector('meta[name="_csrf"]').getAttribute('content');
+                const header = document.querySelector('[name="_csrf_header"]').getAttribute('content');
+
                 function updateStatus(status) {
                     fetch('/phoneshop-web/admin/orders/${order.id}/status', {
                         method: 'PUT',
                         headers: {
-                            'Content-Type': 'application/json'
+                            'Content-Type': 'application/json',
+                            [header]: token
                         },
                         body: JSON.stringify(status)
                     })

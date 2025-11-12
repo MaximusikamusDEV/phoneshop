@@ -1,4 +1,4 @@
-package com.es.phoneshop.web.services;
+package com.es.core.phone;
 
 import com.es.core.cart.exceptions.ItemNotExistException;
 import com.es.core.model.phone.Phone;
