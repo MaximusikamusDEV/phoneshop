@@ -10,4 +10,5 @@ public interface PhoneDao {
     @SuppressWarnings("SqlSourceToSinkFlow")
     List<Phone> findAllInStockSorted(String query, int offset, int limit, String sortField, String sortOrder);
     int getCountPhoneInStock(String query);
+    Optional<Phone> getByBrandAndModel(String brand, String model);
 }

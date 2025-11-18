@@ -26,6 +26,18 @@ public class DBConstants {
             "left join phone2color on p.id = phone2color.phoneId " +
             "left join colors c on phone2color.colorId = c.id " +
             "order by p.id OFFSET ? LIMIT ?";
+    public static final String QUERY_FIND_BY_BRAND_AND_MODEL = "select " +
+            "p.id, p.brand, p.model, p.price, p.displaySizeInches, p.weightGr, " +
+            "p.lengthMm, p.widthMm, p.heightMm, p.announced, p.deviceType, p.os, " +
+            "p.displayResolution, p.pixelDensity, p.displayTechnology, " +
+            "p.backCameraMegapixels, p.frontCameraMegapixels, p.ramGb, " +
+            "p.internalStorageGb, p.batteryCapacityMah, p.talkTimeHours, " +
+            "p.standByTimeHours, p.bluetooth, p.positioning, p.imageUrl, p.description, " +
+            "c.id as color_id, c.code as color_code " +
+            "from phones p " +
+            "left join phone2color on p.id = phone2color.phoneId " +
+            "left join colors c on phone2color.colorId = c.id " +
+            "where lower(p.brand) = lower(?) and lower(p.model) = lower(?)";
     public static final String QUERY_FIND_ALL_IN_STOCK_SORTED = "select " +
             "p.id, p.brand, p.model, p.price, p.displaySizeInches, p.weightGr, " +
             "p.lengthMm, p.widthMm, p.heightMm, p.announced, p.deviceType, p.os, " +
