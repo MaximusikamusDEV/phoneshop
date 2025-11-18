@@ -37,6 +37,13 @@ public class JdbcPhoneDao implements PhoneDao {
     }
 
     @Override
+    public Optional<Phone> getByBrandAndModel(String brand, String model) {
+        List<Phone> phones = jdbcTemplate.query(DBConstants.QUERY_FIND_BY_BRAND_AND_MODEL, phoneSetExtractor, brand, model);
+
+        return CollectionUtils.emptyIfNull(phones).stream().findFirst();
+    }
+
+    @Override
     @Transactional
     public void save(final Phone phone) {
         if (phone.getId() == null) {

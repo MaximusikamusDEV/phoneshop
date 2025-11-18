@@ -10,4 +10,6 @@ public interface PhoneService {
     List<Phone> getAllPhones(int page, String query, String sortField, String sortOrder);
 
     int getTotalPageQuantity(String query);
+
+    Phone getPhoneByBrandAndModel(String brand, String model) throws ItemNotExistException;
 }

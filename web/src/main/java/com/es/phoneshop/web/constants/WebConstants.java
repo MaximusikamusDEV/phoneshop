@@ -7,6 +7,7 @@ public class WebConstants {
     public static final String CART_FORM_ATTR = "cartForm";
     public static final String PHONES_ATTR = "phones";
     public static final String ORDER_LIST_ATTR = "orderList";
+    public static final String BULK_CART_FORM_ATTR = "bulkCartForm";
     public static final String ORDER_ATTR = "order";
     public static final String ORDER_FORM_ATTR = "orderForm";
     public static final String CURR_PAGE_ATTR = "currentPage";
@@ -38,5 +39,5 @@ public class WebConstants {
     public static final String QUANTITY_NULL_VALID_MESSAGE = "Quantity cant be empty or null";
     public static final String PHONE_ID_VALID_MESSAGE = "Phone id can't be lower than zero or null";
     public static final String SUCCESS_ADD_MESSAGE = "Product Added Successfully";
-    public static final String INVALID_CREDENTIALS_MESSAGE = "Invalid username or password";
+    public static final int ROWS_AMOUNT_IN_BULK_CART = 10;
 }

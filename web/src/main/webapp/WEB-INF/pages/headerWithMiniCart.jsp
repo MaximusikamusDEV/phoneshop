@@ -68,6 +68,8 @@
                 </ul>
             </sec:authorize>
 
+            <a href="/phoneshop-web/bulkCart" id="bulkCart" type="button" class="btn btn-primary btn-lg me-3">Bulk cart</a>
+
             <a href="/phoneshop-web/cart" id="cartButton" type="button" class="btn btn-primary btn-lg">My
                 cart: ${cartQuantity != 0 ? cartQuantity : 0} items, ${cartCost != 0 ? cartCost : 0}$</a>
 

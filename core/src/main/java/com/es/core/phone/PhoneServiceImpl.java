@@ -22,6 +22,13 @@ public class PhoneServiceImpl implements PhoneService {
     }
 
     @Override
+    public Phone getPhoneByBrandAndModel(String brand, String model) throws ItemNotExistException {
+        Optional<Phone> phone = phoneDao.getByBrandAndModel(brand, model);
+
+        return phone.orElseThrow(() -> new ItemNotExistException(ExceptionConstants.ERROR_NO_PHONE_WITH_ID_MESSAGE));
+    }
+
+    @Override
     public List<Phone> getAllPhones(int page, String query, String sortField, String sortOrder) {
         List<Phone> phones;
         int offset = (page - 1) * ExceptionConstants.PHONE_PAGE_AMOUNT;
